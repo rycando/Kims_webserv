@@ -1,25 +1,6 @@
 #include "Config.hpp"
 
 
-
-
-void Config::getline(std::string &buf, std::string &line)
-{
-    size_t pos;
-
-    pos = buf.find('\n');
-    if (pos != std::string::npos)
-    {
-        line = std::string(buf, 0, pos++);
-        buf = buf.substr(pos);
-    }
-    else
-    {
-        line = buf;
-        buf = buf.substr(buf.size());
-    }
-}
-
 std::string Config::read_file(char *file) {
     int fd;
     int ret;
@@ -70,7 +51,7 @@ void Config::parse_conf(std::string &buf, std::string line, std::string &context
 
         while (line.empty())
         {
-            getline(buf, line);
+            ft::getline(buf, line, '\n');
             while(std::isspace(line[0]))
                 line.erase(line.begin());
         }
@@ -85,7 +66,7 @@ void Config::parse_conf(std::string &buf, std::string line, std::string &context
         if (context.empty() && tmp.compare(0, 6, "server"))
             throw Config::InvalidConfigFileException(4);
         context += tmp + "|";
-        getline(buf, line);
+        ft::getline(buf, line, '\n');;
         while ((pos = line.find('}')) == std::string::npos)
         {
             if ((pos = line.find(';')) != std::string::npos)
@@ -95,7 +76,7 @@ void Config::parse_conf(std::string &buf, std::string line, std::string &context
             }
             else if (line.find('{') != std::string::npos)
                 parse_conf(buf, line, context, config);
-            getline(buf, line);
+            ft::getline(buf, line, '\n');;
         }
         while(std::isspace(line[0]))
             line.erase(line.begin());
