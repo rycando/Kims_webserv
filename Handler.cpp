@@ -222,3 +222,47 @@ void			Handler::dechunkBody(Client &client)
 		return ;
 	}
 }
+
+void		Handler::createResponse(Client &client)
+{
+	std::map<std::string, std::string>::const_iterator b;
+
+	client.response = client.res.version + " " + client.res.status_code + "\r\n";
+	b = client.res.headers.begin();
+	while (b != client.res.headers.end())
+	{
+		if (b->second != "")
+			client.response += b->first + ": " + b->second + "\r\n";
+		++b;
+	}
+	client.response += "\r\n";
+	client.response += client.res.body;
+	client.res.clear();
+}
+
+void			Handler::createListing(Client &client)
+{
+	DIR				*dir;
+	struct dirent	*cur;
+
+	close(client.read_fd);
+	client.read_fd = -1;
+	dir = opendir(client.conf["path"].c_str());
+	client.res.body = "<html>\n<body>\n";
+	client.res.body += "<h1>Directory listing</h1>\n";
+	while ((cur = readdir(dir)) != NULL)
+	{
+		if (cur->d_name[0] != '.')
+		{
+			client.res.body += "<a href=\"" + client.req.uri;
+			if (client.req.uri != "/")
+				client.res.body += "/";
+			client.res.body += cur->d_name;
+			client.res.body += "\">";
+			client.res.body += cur->d_name;
+			client.res.body += "</a><br>\n";
+		}
+	}
+	closedir(dir);
+	client.res.body += "</body>\n</html>\n";
+}
