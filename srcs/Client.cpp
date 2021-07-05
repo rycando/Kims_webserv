@@ -1,0 +1,146 @@
+#include "../includes/Client.hpp"
+
+Client::Client(int fd, fd_set *r, fd_set *w, struct sockaddr_in c_addr)
+ : _fd(fd), _tmp_fd(-1), _read_fd(-1), _write_fd(-1), _rSet(r), _wSet(w), _cgi_pid(-1) 
+{
+	_status = STANDBY;
+	_ip = inet_ntoa(c_addr.sin_addr);
+	_port = htons(c_addr.sin_port);
+	_buf = (char *)malloc(sizeof(char) * BUFFER_SIZE + 1);
+	memset(_buf, 0, BUFFER_SIZE + 1);
+	fcntl(_fd, F_SETFL, O_NONBLOCK);
+	FD_SET(_fd, _rSet);
+	FD_SET(_fd, _wSet);
+}
+
+Client::~Client()
+{
+	free(_buf);
+	_buf = NULL;
+	if (_fd != -1)
+	{
+		close(_fd);
+		FD_CLR(_fd, _rSet);
+		FD_CLR(_fd, _wSet);
+	}
+	if (_read_fd != -1)
+	{
+		close(_read_fd);
+		FD_CLR(_read_fd, _rSet);
+		FD_CLR(_read_fd, _wSet);
+	}
+	if (_write_fd != -1)
+	{
+		close(_write_fd);
+		FD_CLR(_write_fd, _rSet);
+		FD_CLR(_write_fd, _wSet);
+	}
+	if (_tmp_fd != -1)
+	{
+		close(_tmp_fd);
+		FD_CLR(_tmp_fd, _rSet);
+		FD_CLR(_tmp_fd, _wSet);		
+	}
+}
+
+void	Client::setFileToRead(bool state)
+{
+	if (_read_fd != -1)
+	{
+		if (state)
+			FD_SET(_read_fd, _rSet);
+		else
+			FD_CLR(_read_fd, _rSet);
+	}
+}
+
+void	Client::setFileToWrite(bool status)
+{
+	if (_write_fd != -1)
+	{
+		if (status)
+			FD_SET(_write_fd, _wSet);
+		else
+			FD_CLR(_write_fd, _wSet);
+	}
+}
+
+void	Client::readFile()
+{
+	int ret;
+	int	status;
+	char buffer[BUFFER_SIZE + 1];
+	
+	if (_cgi_pid != -1)
+	{
+		if (!waitpid((pid_t)_cgi_pid, &status, WNOHANG))
+			return ;
+	}
+	else 
+	{
+		if (WEXITSTATUS(status) == 1)
+		{
+			close(_tmp_fd);
+			_tmp_fd = -1;
+			_cgi_pid = -1;
+			close(_read_fd);
+			setFileToRead(false);
+			_read_fd = -1;
+			_res.body = "Error with cgi\n";
+			return;
+		}
+	}
+	
+	try 
+	{
+		ret = read(_read_fd, buffer, BUFFER_SIZE);
+		buffer[ret] = '\0';
+		std::string tmp(buffer, ret);
+		_res.body += tmp;
+		if (ret == 0)
+		{
+			close(_read_fd);
+			setFileToRead(false);
+			_read_fd = -1;
+		}	
+	}
+	catch (std::exception &e)
+	{
+		std::cerr << "ReadFile() error\n" << e.what() << std::endl;
+	}
+}
+
+void	Client::writeFile()
+{
+	int write_size;
+	
+	write_size = write(_write_fd, _req.body.c_str(), _req.body.size());
+	if (_cgi_pid != -1)
+		std::cout << "sent " << write_size << " bytes to CGI stdin\n";
+	if (write_size < _req.body.size())
+		_req.body = _req.body.substr(write_size);
+	else
+	{
+		_req.body.clear();
+		close(_write_fd);
+		setFileToWrite(false);
+		_write_fd = -1;
+	}
+}
+
+int		Client::communicate(fd_set *readSet, fd_set *writeSet, Server &server)
+{
+	if (FD_ISSET(_fd, readSet))  // 클라이언트가 서버로 데이터를 전달할 때
+		if (!server.readRequest(this))  // 클라이언트가 보낸 request 메시지를 읽고 파싱. 다읽었다면 0을 반환하여 반복문 탈출.
+			return (0);
+	if (FD_ISSET(_fd, writeSet))
+		if (!server.writeResponse(this))
+			return (0);
+	if (_write_fd != -1)
+		if (FD_ISSET(_write_fd, writeSet))
+			writeFile();
+	if (_read_fd != -1)
+		if (FD_ISSET(_read_fd, readSet))
+			readFile(); // 에러메세지도 들어옴 getErrorPage()
+	return (1);
+}
