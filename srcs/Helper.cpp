@@ -82,3 +82,38 @@ void			Helper::fillBody(Client &client)
 		memset(client.rBuf, 0, BUFFER_SIZE + 1);
 	}
 }
+
+void			Helper::parseAccept(Client &client, std::multimap<std::string, std::string> &map, std::string header)
+{
+	std::string							charset;
+	std::string							to_parse;
+	std::string							q;
+
+	to_parse = client._req.headers[header];
+	int i = 0;
+	while (to_parse[i] != '\0')
+	{
+		charset.clear();
+		q.clear();
+		while (to_parse[i] && to_parse[i] != ',' && to_parse[i] != ';')
+		{
+			charset += to_parse[i];
+			++i;
+		}
+		if (to_parse[i] == ',' || to_parse[i] == '\0')
+			q = "1";
+		else if (to_parse[i] == ';')
+		{
+			i += 3;
+			while (to_parse[i] && to_parse[i] != ',')
+			{
+				q += to_parse[i];
+				++i;
+			}
+		}
+		if (to_parse[i])
+			++i;
+		std::pair<std::string, std::string>	pair(q, charset);
+		map.insert(pair);
+	}
+}

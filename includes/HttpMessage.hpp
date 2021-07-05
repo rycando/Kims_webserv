@@ -18,6 +18,8 @@ public:
 	std::string uri;
 	std::map<std::string, std::string> headers;
 	std::string body;
+	std::string version;
+	bool valid;
 	
 	void clear()
 	{

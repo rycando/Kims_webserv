@@ -3,12 +3,12 @@
 
 #include <map>
 #include <string>
-#include "request.h"
-#include "response.h"
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <vector>
+#include "HttpMessage.hpp"
+#include "Helper.hpp"
 
 class Handler
 {
@@ -20,14 +20,21 @@ private:
     bool    checkSyntax(const Request &req);
     void    getConf(Client &client, Request &req, std::vector<config> &conf);
     void	dechunkBody(Client &client);
+    void	createResponse(Client &client);
+    void	createListing(Client &client);
+    void	negotiate(Client &client);
 
 
 public:
     Handler(/* args */);
     ~Handler();
 
+    Helper	_helper;
+
+
     void            parseRequest(Client &client, std::vector<config> &config);
     void			parseBody(Client &client);
+    void	        send503(int fd);
 
 };
 
