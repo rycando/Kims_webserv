@@ -1,5 +1,29 @@
-#include "Config.hpp"
+#include "../includes/Config.hpp"
 
+Config::Config(/* args */)
+{
+}
+
+Config::~Config()
+{
+}
+
+void Config::getline(std::string &buf, std::string &line)
+{
+    size_t pos;
+
+    pos = buf.find('\n');
+    if (pos != std::string::npos)
+    {
+        line = std::string(buf, 0, pos++);
+        buf = buf.substr(pos);
+    }
+    else
+    {
+        line = buf;
+        buf = buf.substr(buf.size());
+    }
+}
 
 std::string Config::read_file(char *file) {
     int fd;
@@ -51,7 +75,7 @@ void Config::parse_conf(std::string &buf, std::string line, std::string &context
 
         while (line.empty())
         {
-            ft::getline(buf, line, '\n');
+            getline(buf, line);
             while(std::isspace(line[0]))
                 line.erase(line.begin());
         }
@@ -66,7 +90,7 @@ void Config::parse_conf(std::string &buf, std::string line, std::string &context
         if (context.empty() && tmp.compare(0, 6, "server"))
             throw Config::InvalidConfigFileException(4);
         context += tmp + "|";
-        ft::getline(buf, line, '\n');;
+        getline(buf, line);
         while ((pos = line.find('}')) == std::string::npos)
         {
             if ((pos = line.find(';')) != std::string::npos)
@@ -76,7 +100,7 @@ void Config::parse_conf(std::string &buf, std::string line, std::string &context
             }
             else if (line.find('{') != std::string::npos)
                 parse_conf(buf, line, context, config);
-            ft::getline(buf, line, '\n');;
+            getline(buf, line);
         }
         while(std::isspace(line[0]))
             line.erase(line.begin());
@@ -92,7 +116,6 @@ void Config::parse_conf(std::string &buf, std::string line, std::string &context
         context.pop_back();
 		context = context.substr(0, context.find_last_of('|') + 1);
         line.clear();
-
 }
 
 void Config::parse(char *file, std::vector<Server> &servers) {
@@ -132,8 +155,24 @@ void Config::parse(char *file, std::vector<Server> &servers) {
             server._conf.push_back(config);
             servers.push_back(server);
         }
+        server._conf.clear();
         config.clear();
     }
+}
+
+int  Config::getMaxFd(std::vector<Server> &servers)
+{
+    int     max;
+    int     fd;
+    
+    max = 0;
+    for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++)
+    {
+        fd = it->getMaxFd();
+        if (fd > max)
+            max = fd;
+    }
+    return (max);
 }
 
 
@@ -156,13 +195,4 @@ const char					*Config::InvalidConfigFileException::what(void) const throw()
 	if (this->line)
 		return (error.c_str());
 	return ("Invalid Config File");
-}
-
-
-Config::Config(/* args */)
-{
-}
-
-Config::~Config()
-{
 }
