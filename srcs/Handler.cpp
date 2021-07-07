@@ -1,4 +1,4 @@
-#include "Handler.hpp"
+#include "../includes/Handler.hpp"
 
 Handler::Handler()
 {
@@ -75,7 +75,7 @@ void			Handler::getConf(Client &client, Request &req, std::vector<config> &conf)
 
 	if (!req.valid)
 	{
-		client.conf["error"] = conf[0]["server|"]["error"];
+		client._conf["error"] = conf[0]["server|"]["error"];
 		return ;
 	}
 	std::vector<config>::iterator it(conf.begin());
@@ -105,22 +105,22 @@ void			Handler::getConf(Client &client, Request &req, std::vector<config> &conf)
 			elmt = to_parse["server|location /|"];
 	if (elmt.size() > 0)
 	{
-		client.conf = elmt;
-		client.conf["path"] = req.uri.substr(0, req.uri.find("?"));
+		client._conf = elmt;
+		client._conf["path"] = req.uri.substr(0, req.uri.find("?"));
 		if (elmt.find("root") != elmt.end())
-			client.conf["path"].replace(0, tmp.size(), elmt["root"]);
+			client._conf["path"].replace(0, tmp.size(), elmt["root"]);
 	}
 	for (std::map<std::string, std::string>::iterator it(to_parse["server|"].begin()); it != to_parse["server|"].end(); ++it)
 	{
-		if (client.conf.find(it->first) == client.conf.end())
-			client.conf[it->first] = it->second;
+		if (client._conf.find(it->first) == client._conf.end())
+			client._conf[it->first] = it->second;
 	}
-	lstat(client.conf["path"].c_str(), &info);
+	lstat(client._conf["path"].c_str(), &info);
 	if (S_ISDIR(info.st_mode))
-		if (client.conf["index"][0] && client.conf["listing"] != "on")
-			client.conf["path"] += "/" + client.conf["index"];
+		if (client._conf["index"][0] && client._conf["listing"] != "on")
+			client._conf["path"] += "/" + client._conf["index"];
 	if (req.method == "GET")
-		client.conf["savedpath"] = client.conf["path"];
+		client._conf["savedpath"] = client._conf["path"];
 }
 
 void Handler::parseRequest(Client &client, std::vector<config> &config)
@@ -139,8 +139,8 @@ void Handler::parseRequest(Client &client, std::vector<config> &config)
 		getConf(client, request, config);
 	if (request.valid)
 	{
-		if (client.conf["root"][0] != '\0')
-			chdir(client.conf["root"].c_str());
+		if (client._conf["root"][0] != '\0')
+			chdir(client._conf["root"].c_str());
 		if (request.method == "POST" || request.method == "PUT")
 			client.status = Client::BODYPARSING;
 		else
@@ -220,5 +220,125 @@ void			Handler::dechunkBody(Client &client)
 		client.chunk.found = false;
 		client.chunk.done = false;
 		return ;
+	}
+}
+
+void		Handler::createResponse(Client &client)
+{
+	std::map<std::string, std::string>::const_iterator b;
+
+	client.response = client.res.version + " " + client.res.status_code + "\r\n";
+	b = client.res.headers.begin();
+	while (b != client.res.headers.end())
+	{
+		if (b->second != "")
+			client.response += b->first + ": " + b->second + "\r\n";
+		++b;
+	}
+	client.response += "\r\n";
+	client.response += client.res.body;
+	client.res.clear();
+}
+
+void			Handler::createListing(Client &client)
+{
+	DIR				*dir;
+	struct dirent	*cur;
+
+	close(client.read_fd);
+	client.read_fd = -1;
+	dir = opendir(client._conf["path"].c_str());
+	client.res.body = "<html>\n<body>\n";
+	client.res.body += "<h1>Directory listing</h1>\n";
+	while ((cur = readdir(dir)) != NULL)
+	{
+		if (cur->d_name[0] != '.')
+		{
+			client.res.body += "<a href=\"" + client.req.uri;
+			if (client.req.uri != "/")
+				client.res.body += "/";
+			client.res.body += cur->d_name;
+			client.res.body += "\">";
+			client.res.body += cur->d_name;
+			client.res.body += "</a><br>\n";
+		}
+	}
+	closedir(dir);
+	client.res.body += "</body>\n</html>\n";
+}
+
+void			Handler::negotiate(Client &client)
+{
+	std::multimap<std::string, std::string> 	languageMap;
+	std::multimap<std::string, std::string> 	charsetMap;
+	int				fd = -1;
+	std::string		path;
+	std::string		ext;
+
+	if (client.req.headers.find("Accept-Language") != client.req.headers.end())
+		_helper.parseAccept(client, languageMap, "Accept-Language");
+	if (client.req.headers.find("Accept-Charset") != client.req.headers.end())
+		_helper.parseAccept(client, charsetMap, "Accept-Charset");
+	if (!languageMap.empty())
+	{
+		for (std::multimap<std::string, std::string>::reverse_iterator it(languageMap.rbegin()); it != languageMap.rend(); ++it)
+		{
+			if (!charsetMap.empty())
+			{
+				for (std::multimap<std::string, std::string>::reverse_iterator it2(charsetMap.rbegin()); it2 != charsetMap.rend(); ++it2)
+				{
+					ext = it->second + "." + it2->second;
+					path = client._conf["savedpath"] + "." + ext;
+					fd = open(path.c_str(), O_RDONLY);
+					if (fd != -1)
+					{
+						client._res.headers["Content-Language"] = it->second;
+						break ;
+					}
+					ext = it2->second + "." + it->second;
+					path = client._conf["savedpath"] + "." + ext;
+					fd = open(path.c_str(), O_RDONLY);
+					if (fd != -1)
+					{
+						client._res.headers["Content-Language"] = it->second;
+						break ;
+					}
+				}
+			}
+			else
+			{
+				ext = it->second;
+				path = client.conf["savedpath"] + "." + ext;
+				fd = open(path.c_str(), O_RDONLY);
+				if (fd != -1)
+				{
+					client.res.headers["Content-Language"] = it->second;
+					break ;
+				}
+			}
+		}
+	}
+	else if (languageMap.empty())
+	{
+		if (!charsetMap.empty())
+		{
+			for (std::multimap<std::string, std::string>::reverse_iterator it2(charsetMap.rbegin()); it2 != charsetMap.rend(); ++it2)
+			{
+				ext = it2->second;
+				path = client.conf["savedpath"] + "." + it2->second;
+				fd = open(path.c_str(), O_RDONLY);
+				if (fd != -1)
+					break ;
+			}
+		}
+	}
+	if (fd != -1)
+	{
+		client.conf["path"] = path;
+		client.res.headers["Content-Location"] = client.req.uri + "." + ext;
+		if (client.read_fd != -1)
+			close(client.read_fd);
+		client.read_fd = fd;
+		client.res.status_code = OK;
 	}
 }

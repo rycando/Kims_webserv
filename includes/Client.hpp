@@ -13,6 +13,7 @@ class Server;
 class Client
 {
 	friend class Server;
+	friend class Helper;
 	typedef std::map<std::string, std::string> t_conf;
 
 	private:
