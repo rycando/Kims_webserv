@@ -3,6 +3,7 @@
 
 #include "./Server.hpp"
 #include "./HttpMessage.hpp"
+#include "./Handler.hpp"
 #include <arpa/inet.h>
 #include <iostream>
 
@@ -14,6 +15,7 @@ class Client
 {
 	friend class Server;
 	friend class Helper;
+	friend class Handler;
 	typedef std::map<std::string, std::string> t_conf;
 
 	private:
