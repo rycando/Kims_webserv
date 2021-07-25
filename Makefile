@@ -5,6 +5,7 @@ FLAGS = -I./includes
 SRCS = 	./srcs/Server.cpp \
 		./srcs/Config.cpp \
 		./srcs/Client.cpp \
+		./srcs/Helper.cpp \
 		./srcs/Handler.cpp \
 		./srcs/HandlerMethods.cpp \
 		./srcs/utils.cpp \
