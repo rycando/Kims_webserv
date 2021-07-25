@@ -1,16 +1,7 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#include "Server.hpp"
-#include <map>
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <iostream>
-#include <string>
-#include <cctype>
-#include <map>
+#include "Webserv.hpp"
 
 class Config
 {

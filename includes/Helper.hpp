@@ -1,8 +1,7 @@
 #ifndef HELPER_HPP
 #define HELPER_HPP
 
-#include "utils.hpp"
-#include "./Client.hpp"
+#include "Webserv.hpp"
 
 class Client;
 

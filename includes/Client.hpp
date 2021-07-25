@@ -1,11 +1,7 @@
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 
-#include "Server.hpp"
-#include "HttpMessage.hpp"
-#include "Handler.hpp"
-#include <arpa/inet.h>
-#include <iostream>
+#include "Webserv.hpp"
 
 #define BUFFER_SIZE 32768
 

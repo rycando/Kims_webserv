@@ -1,9 +1,7 @@
 #ifndef UTILS_HPP
 # define UTILS_HPP
 
-#include <string>
-#include <iostream>
-#include <sys/time.h>
+#include "./Webserv.hpp"
 
 #define BUFFER_SIZE 32768
 

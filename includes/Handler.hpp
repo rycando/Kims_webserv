@@ -1,17 +1,9 @@
 #ifndef HANDLER_HPP
 #define HANDLER_HPP
 
-#include <map>
-#include <string>
-#include <dirent.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <vector>
-#include <sys/select.h>
-#include "HttpMessage.hpp"
-#include "Status.hpp"
-#include "Helper.hpp"
-#include "Status.hpp"
+#include "Webserv.hpp"
+
+class Helper;
 
 class Handler
 {
