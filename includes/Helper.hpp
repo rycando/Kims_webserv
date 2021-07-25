@@ -16,8 +16,6 @@ public:
     void		    fillBody(Client &client);
     void			parseAccept(Client &client, std::multimap<std::string, std::string> &map, std::string header);
 
-
-
     Helper(/* args */);
     ~Helper();
 };

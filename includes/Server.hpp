@@ -22,7 +22,7 @@
 #include <arpa/inet.h>
 #include <sys/errno.h>
 
-#include "./Client.hpp"
+#include "Client.hpp"
 
 class Client;
 

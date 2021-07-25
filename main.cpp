@@ -1,6 +1,6 @@
-#include "./includes/Server.hpp"
-#include "./includes/Config.hpp"
-#include "./includes/Client.hpp"
+#include "includes/Server.hpp"
+#include "includes/Config.hpp"
+#include "includes/Client.hpp"
 #include <iostream>
 
 std::vector<Server>		g_servers;
@@ -33,17 +33,13 @@ int main(int argc, char** argv)
 	Server	server;
 	Config	config;
 	Client	*client;
-
 	fd_set	readSet;
 	fd_set	writeSet;
 	fd_set	rSet;
 	fd_set	wSet;
 	bool	g_state = true;
 	struct timeval timeout;
-
-
 	std::string tmp;
-	int			count = 0;
 	
 	if (argc != 2)
 		return (0);

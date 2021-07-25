@@ -1,9 +1,9 @@
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 
-#include "./Server.hpp"
-#include "./HttpMessage.hpp"
-#include "./Handler.hpp"
+#include "Server.hpp"
+#include "HttpMessage.hpp"
+#include "Handler.hpp"
 #include <arpa/inet.h>
 #include <iostream>
 
