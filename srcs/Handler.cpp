@@ -200,7 +200,7 @@ void			Handler::getBody(Client &client)
 
 void			Handler::dechunkBody(Client &client)
 {
-    // while (!client.chunk.done)
+    // while (!client._chunk.done)
     // {
         if (strstr(client._buf, "\r\n") && client._chunk.found == false)
         {

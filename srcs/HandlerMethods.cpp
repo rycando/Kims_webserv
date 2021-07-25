@@ -30,7 +30,7 @@ void	Handler::send503(fd_set *wSet, std::queue<int> &tmp_clients)
 	if (ret >= -1)
 	{
 		close(fd);
-		FD_CLR(fd, wSet);
+		FD_CLR(fd, *wSet);
 		tmp_clients.pop();
 	}
 }

@@ -45,7 +45,7 @@ void Server::init(fd_set *readSet, fd_set *writeSet, fd_set *rSet, fd_set *wSet)
 	//2. 연결 요청을 수신할 주소 설정 - _conf에서 host와 port를 가져오자.
 	memset(&_s_addr, 0, sizeof(_s_addr));
 
-	if ((c_idx = parse_address.find(":")) != std::string::npos)
+	if ((const unsigned long)(c_idx = parse_address.find(":")) != std::string::npos)
 	{
 		host = parse_address.substr(0, c_idx);
 		if ((_port = atoi(parse_address.substr(c_idx + 1).c_str())) < 0)   // client port
@@ -79,7 +79,7 @@ void Server::init(fd_set *readSet, fd_set *writeSet, fd_set *rSet, fd_set *wSet)
 
 void Server::connect(int openFd)
 {
-	struct timeval			timeout;
+	// struct timeval			timeout;
 	int						MAX_FD = 256 - 20;
 
 	// select(this->_fd + 1, this->_readSet, this->_writeSet, NULL, &timeout);

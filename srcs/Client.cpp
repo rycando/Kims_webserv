@@ -127,20 +127,3 @@ void	Client::writeFile()
 		_write_fd = -1;
 	}
 }
-
-int		Client::communicate(fd_set *readSet, fd_set *writeSet, Server &server)
-{
-	if (FD_ISSET(_fd, readSet))  // 클라이언트가 서버로 데이터를 전달할 때
-		if (!server.readRequest(this))  // 클라이언트가 보낸 request 메시지를 읽고 파싱. 다읽었다면 0을 반환하여 반복문 탈출.
-			return (0);
-	if (FD_ISSET(_fd, writeSet))
-		if (!server.writeResponse(this))
-			return (0);
-	if (_write_fd != -1)
-		if (FD_ISSET(_write_fd, writeSet))
-			writeFile();
-	if (_read_fd != -1)
-		if (FD_ISSET(_read_fd, readSet))
-			readFile(); // 에러메세지도 들어옴 getErrorPage()
-	return (1);
-}

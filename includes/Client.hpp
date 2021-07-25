@@ -1,8 +1,9 @@
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 
-#include "./Server.hpp"
-#include "./HttpMessage.hpp"
+#include "Server.hpp"
+#include "HttpMessage.hpp"
+#include "Handler.hpp"
 #include <arpa/inet.h>
 #include <iostream>
 
@@ -15,20 +16,21 @@ class Client
 	friend class Server;
 	friend class Helper;
 	friend class Handler;
+	
+	typedef std::map<std::string, std::string> t_conf;
 	struct t_chunk
 	{
 		unsigned int	len;
 		bool			done;
 		bool			found;
 	};
-	typedef std::map<std::string, std::string> t_conf;
 
 	private:
 		int				_port;
 		int				_status;
 		int				_cgi_pid;
 		int				_tmp_fd;
-		char			*_buf;
+		char 			*_buf;
 		fd_set			*_rSet;
 		fd_set			*_wSet;
 		std::string		_ip;
@@ -68,8 +70,6 @@ class Client
 		void	setFileToRead(bool state);
 		void	setFileToWrite(bool state);
 		void	setToStandBy();
-		
-		int		communicate(fd_set *readSet, fd_set *writeSet, Server &server);
 };
 	
 

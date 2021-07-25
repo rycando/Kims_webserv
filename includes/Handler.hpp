@@ -7,7 +7,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <vector>
+#include <sys/select.h>
 #include "HttpMessage.hpp"
+#include "Status.hpp"
 #include "Helper.hpp"
 #include "Status.hpp"
 
@@ -25,9 +27,7 @@ private:
     void	createResponse(Client &client);
     void	createListing(Client &client);
     void	negotiate(Client &client);
-    void	getBody(Client &client);
-
-
+    void    getBody(Client &client);
 
 public:
     Handler(/* args */);
