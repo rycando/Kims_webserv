@@ -129,7 +129,7 @@ void Handler::parseRequest(Client &client, std::vector<config> &config)
 	std::string			tmp;
 	std::string			buffer;
 
-    buffer = std::string(client.rBuf);
+    buffer = std::string(client._buf);
     ft::getline(buffer, request.method, ' ');
     ft::getline(buffer, request.uri, ' ');
     ft::getline(buffer, request.version, '\n');
@@ -142,31 +142,31 @@ void Handler::parseRequest(Client &client, std::vector<config> &config)
 		if (client._conf["root"][0] != '\0')
 			chdir(client._conf["root"].c_str());
 		if (request.method == "POST" || request.method == "PUT")
-			client.status = Client::BODYPARSING;
+			client._status = Client::BODYPARSING;
 		else
-			client.status = Client::CODE;
+			client._status = Client::CODE;
 	}
 	else
 	{
 		request.method = "BAD";
-		client.status = Client::CODE;
+		client._status = Client::CODE;
 	}
-	client.req = request;
-	tmp = client.rBuf;
+	client._req = request;
+	tmp = client._buf;
 	tmp = tmp.substr(tmp.find("\r\n\r\n") + 4);
-	strcpy(client.rBuf, tmp.c_str());
+	strcpy(client._buf, tmp.c_str());
 }
 
 void			Handler::parseBody(Client &client)
 {
-	if (client.req.headers.find("Content-Length") != client.req.headers.end())
+	if (client._req.headers.find("Content-Length") != client._req.headers.end())
 		getBody(client);
-	else if (client.req.headers["Transfer-Encoding"] == "chunked")
+	else if (client._req.headers["Transfer-Encoding"] == "chunked")
 		dechunkBody(client);
 	else
 	{
-		client.req.method = "BAD";
-		client.status = Client::CODE;
+		client._req.method = "BAD";
+		client._status = Client::CODE;
 	}
 }
 
@@ -174,27 +174,27 @@ void			Handler::getBody(Client &client)
 {
 	unsigned int	bytes;
 
-	if (client.chunk.len == 0)
-		client.chunk.len = atoi(client.req.headers["Content-Length"].c_str());
-	if (client.chunk.len < 0)
+	if (client._chunk.len == 0)
+		client._chunk.len = atoi(client._req.headers["Content-Length"].c_str());
+	if (client._chunk.len < 0)
 	{
-		client.req.method = "BAD";
-		client.status = Client::CODE;
+		client._req.method = "BAD";
+		client._status = Client::CODE;
 		return ;
 	}
-	bytes = strlen(client.rBuf);
-	if (bytes >= client.chunk.len)
+	bytes = strlen(client._buf);
+	if (bytes >= client._chunk.len)
 	{
-		memset(client.rBuf + client.chunk.len, 0, BUFFER_SIZE - client.chunk.len);
-		client.req.body += client.rBuf;
-		client.chunk.len = 0;
-		client.status = Client::CODE;
+		memset(client._buf + client._chunk.len, 0, BUFFER_SIZE - client._chunk.len);
+		client._req.body += client._buf;
+		client._chunk.len = 0;
+		client._status = Client::CODE;
 	}
 	else
 	{
-		client.chunk.len -= bytes;
-		client.req.body += client.rBuf;
-		memset(client.rBuf, 0, BUFFER_SIZE + 1);
+		client._chunk.len -= bytes;
+		client._req.body += client._buf;
+		memset(client._buf, 0, BUFFER_SIZE + 1);
 	}
 }
 
@@ -202,23 +202,23 @@ void			Handler::dechunkBody(Client &client)
 {
     // while (!client.chunk.done)
     // {
-        if (strstr(client.rBuf, "\r\n") && client.chunk.found == false)
+        if (strstr(client._buf, "\r\n") && client._chunk.found == false)
         {
-            client.chunk.len = _helper.findLen(client);
-            if (client.chunk.len == 0)
-                client.chunk.done = true;
+            client._chunk.len = _helper.findLen(client);
+            if (client._chunk.len == 0)
+                client._chunk.done = true;
             else
-                client.chunk.found = true;
+                client._chunk.found = true;
         }
-        else if (client.chunk.found == true)
+        else if (client._chunk.found == true)
             _helper.fillBody(client);
     // }
-	if (client.chunk.done)
+	if (client._chunk.done)
 	{
-		memset(client.rBuf, 0, BUFFER_SIZE + 1);
-		client.status = Client::CODE;
-		client.chunk.found = false;
-		client.chunk.done = false;
+		memset(client._buf, 0, BUFFER_SIZE + 1);
+		client._status = Client::CODE;
+		client._chunk.found = false;
+		client._chunk.done = false;
 		return ;
 	}
 }
@@ -227,17 +227,17 @@ void		Handler::createResponse(Client &client)
 {
 	std::map<std::string, std::string>::const_iterator b;
 
-	client.response = client.res.version + " " + client.res.status_code + "\r\n";
-	b = client.res.headers.begin();
-	while (b != client.res.headers.end())
+	client._response = client._res.version + " " + client._res.status_code + "\r\n";
+	b = client._res.headers.begin();
+	while (b != client._res.headers.end())
 	{
 		if (b->second != "")
-			client.response += b->first + ": " + b->second + "\r\n";
+			client._response += b->first + ": " + b->second + "\r\n";
 		++b;
 	}
-	client.response += "\r\n";
-	client.response += client.res.body;
-	client.res.clear();
+	client._response += "\r\n";
+	client._response += client._res.body;
+	client._res.clear();
 }
 
 void			Handler::createListing(Client &client)
@@ -245,26 +245,26 @@ void			Handler::createListing(Client &client)
 	DIR				*dir;
 	struct dirent	*cur;
 
-	close(client.read_fd);
-	client.read_fd = -1;
+	close(client._read_fd);
+	client._read_fd = -1;
 	dir = opendir(client._conf["path"].c_str());
-	client.res.body = "<html>\n<body>\n";
-	client.res.body += "<h1>Directory listing</h1>\n";
+	client._res.body = "<html>\n<body>\n";
+	client._res.body += "<h1>Directory listing</h1>\n";
 	while ((cur = readdir(dir)) != NULL)
 	{
 		if (cur->d_name[0] != '.')
 		{
-			client.res.body += "<a href=\"" + client.req.uri;
-			if (client.req.uri != "/")
-				client.res.body += "/";
-			client.res.body += cur->d_name;
-			client.res.body += "\">";
-			client.res.body += cur->d_name;
-			client.res.body += "</a><br>\n";
+			client._res.body += "<a href=\"" + client._req.uri;
+			if (client._req.uri != "/")
+				client._res.body += "/";
+			client._res.body += cur->d_name;
+			client._res.body += "\">";
+			client._res.body += cur->d_name;
+			client._res.body += "</a><br>\n";
 		}
 	}
 	closedir(dir);
-	client.res.body += "</body>\n</html>\n";
+	client._res.body += "</body>\n</html>\n";
 }
 
 void			Handler::negotiate(Client &client)
@@ -275,9 +275,9 @@ void			Handler::negotiate(Client &client)
 	std::string		path;
 	std::string		ext;
 
-	if (client.req.headers.find("Accept-Language") != client.req.headers.end())
+	if (client._req.headers.find("Accept-Language") != client._req.headers.end())
 		_helper.parseAccept(client, languageMap, "Accept-Language");
-	if (client.req.headers.find("Accept-Charset") != client.req.headers.end())
+	if (client._req.headers.find("Accept-Charset") != client._req.headers.end())
 		_helper.parseAccept(client, charsetMap, "Accept-Charset");
 	if (!languageMap.empty())
 	{
@@ -308,11 +308,11 @@ void			Handler::negotiate(Client &client)
 			else
 			{
 				ext = it->second;
-				path = client.conf["savedpath"] + "." + ext;
+				path = client._conf["savedpath"] + "." + ext;
 				fd = open(path.c_str(), O_RDONLY);
 				if (fd != -1)
 				{
-					client.res.headers["Content-Language"] = it->second;
+					client._res.headers["Content-Language"] = it->second;
 					break ;
 				}
 			}
@@ -325,7 +325,7 @@ void			Handler::negotiate(Client &client)
 			for (std::multimap<std::string, std::string>::reverse_iterator it2(charsetMap.rbegin()); it2 != charsetMap.rend(); ++it2)
 			{
 				ext = it2->second;
-				path = client.conf["savedpath"] + "." + it2->second;
+				path = client._conf["savedpath"] + "." + it2->second;
 				fd = open(path.c_str(), O_RDONLY);
 				if (fd != -1)
 					break ;
@@ -334,11 +334,11 @@ void			Handler::negotiate(Client &client)
 	}
 	if (fd != -1)
 	{
-		client.conf["path"] = path;
-		client.res.headers["Content-Location"] = client.req.uri + "." + ext;
-		if (client.read_fd != -1)
-			close(client.read_fd);
-		client.read_fd = fd;
-		client.res.status_code = OK;
+		client._conf["path"] = path;
+		client._res.headers["Content-Location"] = client._req.uri + "." + ext;
+		if (client._read_fd != -1)
+			close(client._read_fd);
+		client._read_fd = fd;
+		client._res.status_code = OK;
 	}
 }

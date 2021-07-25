@@ -1,10 +1,13 @@
-#include "Handler.hpp"
+#include "../includes/Handler.hpp"
 
-void	Handler::send503(int fd, fd_set &wSet, Client &tmp_clients)
+void	Handler::send503(fd_set *wSet, std::queue<int> &tmp_clients)
 {
 	Response		response;
 	std::string		str;
 	int				ret = 0;
+	int				fd;
+
+	fd = tmp_clients.front();
 
 	response.version = "HTTP/1.1";
 	response.status_code = UNAVAILABLE;
@@ -30,5 +33,4 @@ void	Handler::send503(int fd, fd_set &wSet, Client &tmp_clients)
 		FD_CLR(fd, wSet);
 		tmp_clients.pop();
 	}
-	g_logger.log("[" + std::to_string(_port) + "] " + "connection refused, sent 503", LOW);
 }

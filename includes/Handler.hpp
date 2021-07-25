@@ -9,11 +9,13 @@
 #include <vector>
 #include "HttpMessage.hpp"
 #include "Helper.hpp"
+#include "Status.hpp"
 
 class Handler
 {
     typedef std::map<std::string, std::string> 	elmt;
 	typedef std::map<std::string, elmt>			config;
+    
 private:
     /* data */
     bool    parseHeaders(std::string &buf, Request &req);
@@ -23,6 +25,8 @@ private:
     void	createResponse(Client &client);
     void	createListing(Client &client);
     void	negotiate(Client &client);
+    void	getBody(Client &client);
+
 
 
 public:
@@ -34,7 +38,7 @@ public:
 
     void            parseRequest(Client &client, std::vector<config> &config);
     void			parseBody(Client &client);
-    void	        send503(int fd);
+    void	        send503(fd_set *wSet, std::queue<int> &tmp_clients);
 
 };
 

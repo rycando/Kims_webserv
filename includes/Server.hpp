@@ -64,6 +64,7 @@ class Server
 		void	send503(int fd);
 		int		readRequest(Client *client);
 		int		writeResponse(Client *client);
+		fd_set *getWSet();
 
 	class		ServerException: public std::exception
 	{

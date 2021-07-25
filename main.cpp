@@ -1,6 +1,7 @@
 #include "./includes/Server.hpp"
 #include "./includes/Config.hpp"
 #include "./includes/Client.hpp"
+#include "./includes/Handler.hpp"
 #include <iostream>
 
 std::vector<Server>		g_servers;
@@ -32,6 +33,7 @@ int main(int argc, char** argv)
 {
 	Server	server;
 	Config	config;
+	Handler handler;
 	Client	*client;
 
 	fd_set	readSet;
@@ -85,7 +87,7 @@ int main(int argc, char** argv)
 			}
 			
 			if (!server->_tmp_clients.empty())
-				server->send503(server->_tmp_clients.front());
+				handler.send503(server->getWSet(), server->_tmp_clients);
 			
 			for (std::vector<Client *>::iterator c(server->_clients.begin()); c != server->_clients.end(); c++)
 			{

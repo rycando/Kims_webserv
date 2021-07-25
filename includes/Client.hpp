@@ -14,6 +14,13 @@ class Client
 {
 	friend class Server;
 	friend class Helper;
+	friend class Handler;
+	struct t_chunk
+	{
+		unsigned int	len;
+		bool			done;
+		bool			found;
+	};
 	typedef std::map<std::string, std::string> t_conf;
 
 	private:
@@ -28,7 +35,7 @@ class Client
 		std::string		_last_date;
 		std::string		_response;
 		t_conf 			_conf;
-		// t_chunk		chunk;
+		t_chunk			_chunk;
 		Request			_req;
 		Response		_res;
 

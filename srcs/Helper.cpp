@@ -1,4 +1,4 @@
-#include "Helper.hpp"
+#include "../includes/Helper.hpp"
 
 int				Helper::fromHexa(const char *nb)
 {
@@ -46,7 +46,7 @@ int				Helper::findLen(Client &client)
 	int				len;
 	std::string		tmp;
 
-	to_convert = client.rBuf;
+	to_convert = client._buf;
 	to_convert = to_convert.substr(0, to_convert.find("\r\n"));
 	while (to_convert[0] == '\n')
 		to_convert.erase(to_convert.begin());
@@ -54,9 +54,9 @@ int				Helper::findLen(Client &client)
 		len = 0;
 	else
 		len = fromHexa(to_convert.c_str());
-	tmp = client.rBuf;
+	tmp = client._buf;
 	tmp = tmp.substr(tmp.find("\r\n") + 2);
-	strcpy(client.rBuf, tmp.c_str());
+	strcpy(client._buf, tmp.c_str());
 	return (len);
 }
 
@@ -64,22 +64,22 @@ void			Helper::fillBody(Client &client)
 {
 	std::string		tmp;
 
-	tmp = client.rBuf;
-	if (tmp.size() > client.chunk.len)
+	tmp = client._buf;
+	if (tmp.size() > client._chunk.len)
 	{
-		client.req.body += tmp.substr(0, client.chunk.len);
-		tmp = tmp.substr(client.chunk.len + 1);
-		memset(client.rBuf, 0, BUFFER_SIZE + 1);
-		strcpy(client.rBuf, tmp.c_str());
-		client.chunk.len = 0;
-		client.chunk.found = false;
+		client._req.body += tmp.substr(0, client._chunk.len);
+		tmp = tmp.substr(client._chunk.len + 1);
+		memset(client._buf, 0, BUFFER_SIZE + 1);
+		strcpy(client._buf, tmp.c_str());
+		client._chunk.len = 0;
+		client._chunk.found = false;
 	}
 	else
 	{
-		client.req.body += tmp;
-		client.chunk.len -= tmp.size();
-        client.chunk.done = true;
-		memset(client.rBuf, 0, BUFFER_SIZE + 1);
+		client._req.body += tmp;
+		client._chunk.len -= tmp.size();
+        client._chunk.done = true;
+		memset(client._buf, 0, BUFFER_SIZE + 1);
 	}
 }
 
