@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 {
 	Server	server;
 	Config	config;
-	Client	*client;
+	// Client	*client;
 
 	fd_set	readSet;
 	fd_set	writeSet;
@@ -43,7 +43,6 @@ int main(int argc, char** argv)
 
 
 	std::string tmp;
-	int			count = 0;
 	
 	if (argc != 2)
 		return (0);

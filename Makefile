@@ -2,7 +2,7 @@ NAME = webserv
 CC = clang++
 FLAGS = -Wall -Wextra -Werror -I./includes
 
-SRCS = main.cpp ./srcs/Config.cpp ./srcs/Server.cpp ./srcs/Client.cpp ./srcs/Handler.cpp ./srcs/HandlerMethods.cpp ./srcs/utils.cpp
+SRCS = ./srcs/Server.cpp ./srcs/Config.cpp ./srcs/Client.cpp ./srcs/Handler.cpp ./srcs/HandlerMethods.cpp ./srcs/utils.cpp main.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 
