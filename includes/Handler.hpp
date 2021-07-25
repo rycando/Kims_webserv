@@ -25,7 +25,7 @@ private:
     void	createResponse(Client &client);
     void	createListing(Client &client);
     void	negotiate(Client &client);
-
+    void    getBody(Client &client);
 
 public:
     Handler(/* args */);
