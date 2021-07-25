@@ -27,8 +27,7 @@ void	Handler::send503(int fd, fd_set &wSet, Client &tmp_clients)
 	if (ret >= -1)
 	{
 		close(fd);
-		FD_CLR(fd, wSet);
+		FD_CLR(fd, *wSet);
 		tmp_clients.pop();
 	}
-	g_logger.log("[" + std::to_string(_port) + "] " + "connection refused, sent 503", LOW);
 }
