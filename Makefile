@@ -1,15 +1,22 @@
 NAME = webserv
 CC = clang++
+FLAGS = -I./includes
 
-SRCS = ./srcs/Server.cpp ./srcs/Config.cpp ./srcs/Client.cpp ./srcs/Handler.cpp ./srcs/HandlerMethods.cpp ./srcs/utils.cpp main.cpp
+SRCS = 	./srcs/Server.cpp \
+		./srcs/Config.cpp \
+		./srcs/Client.cpp \
+		./srcs/Handler.cpp \
+		./srcs/HandlerMethods.cpp \
+		./srcs/utils.cpp \
+		main.cpp
 
-OBJS = $(SRCS:.cpp=.o)
+# OBJS = $(SRCS:%.cpp=%.o)
 
 .cpp.o : 
-	$(CC) $^ -o $@ -g
+	$(CC) $(FLAGS) $^ -o $@
 
-$(NAME) : $(OBJS)
-	$(CC) -I./includes/ $^ -o $@ -g
+$(NAME) : 
+	$(CC) $(FLAGS) $(SRCS) -o $(NAME) 
 
 all : $(NAME)
 
