@@ -2,8 +2,9 @@
 #define HANDLER_HPP
 
 #include "Webserv.hpp"
-
-class Helper;
+#include "Helper.hpp"
+#include "HttpMessage.hpp"
+#include "utils.hpp"
 
 class Handler
 {

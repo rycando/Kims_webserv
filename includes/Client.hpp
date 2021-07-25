@@ -2,10 +2,9 @@
 # define CLIENT_HPP
 
 #include "Webserv.hpp"
+#include "HttpMessage.hpp"
 
 #define BUFFER_SIZE 32768
-
-class Server;
 
 class Client
 {

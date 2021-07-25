@@ -1,5 +1,15 @@
 #include "../includes/Helper.hpp"
 
+Helper::Helper()
+{
+	
+}
+
+Helper::~Helper()
+{
+	
+}
+
 int				Helper::fromHexa(const char *nb)
 {
 	char	base[17] = "0123456789abcdef";

@@ -2,8 +2,9 @@
 #define HELPER_HPP
 
 #include "Webserv.hpp"
-
-class Client;
+#include "Status.hpp"
+#include "Client.hpp"
+#include "utils.hpp"
 
 class Helper
 {

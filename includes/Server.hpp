@@ -4,8 +4,8 @@
 #define PORT 9000
 
 #include "Webserv.hpp"
-
-class Client;
+#include "Handler.hpp"
+#include "Client.hpp"
 
 class Server
 {
