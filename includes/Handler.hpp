@@ -7,8 +7,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <vector>
-#include "HttpMessage.hpp"
-#include "Helper.hpp"
+#include "./HttpMessage.hpp"
+#include "./Helper.hpp"
+#include "./Client.hpp"
 
 class Handler
 {

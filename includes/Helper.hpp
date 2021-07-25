@@ -2,7 +2,9 @@
 #define HELPER_HPP
 
 #include "utils.h"
-#include "Client.hpp"
+#include "./Client.hpp"
+
+class Client;
 
 class Helper
 {

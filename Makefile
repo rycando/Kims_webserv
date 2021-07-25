@@ -6,6 +6,9 @@ SRCS = main.cpp ./srcs/Config.cpp ./srcs/Server.cpp ./srcs/Client.cpp ./srcs/Han
 
 OBJS = $(SRCS:.cpp=.o)
 
+.cpp.o : 
+	$(CC) $(FLAGS) $^ -o $@ -g
+
 $(NAME) : $(OBJS)
 	$(CC) $(FLAGS) $^ -o $@ -g
 
