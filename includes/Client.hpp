@@ -63,8 +63,6 @@ class Client
 		void	setFileToRead(bool state);
 		void	setFileToWrite(bool state);
 		void	setToStandBy();
-		
-		int		communicate(fd_set *readSet, fd_set *writeSet, Server &server);
 };
 	
 

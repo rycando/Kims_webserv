@@ -7,7 +7,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <vector>
+#include <sys/select.h>
 #include "HttpMessage.hpp"
+#include "Status.hpp"
 #include "Helper.hpp"
 
 class Handler
