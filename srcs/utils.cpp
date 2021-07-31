@@ -48,5 +48,17 @@ namespace ft
 		return (buf);
 	}
 
-
+	void	freeAll(char **args, char **env)
+	{
+		free(args[0]);
+		free(args[1]);
+		free(args);
+		int i = 0;
+		while (env[i])
+		{
+			free(env[i]);
+			++i;
+		}
+		free(env);
+	}
 }

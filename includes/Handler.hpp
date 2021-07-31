@@ -21,6 +21,9 @@ private:
     void	createListing(Client &client);
     void	negotiate(Client &client);
     void    getBody(Client &client);
+    void    execCGI(Client &client);
+    void	wparseCGIResult(Client &client);
+
 
 public:
     Handler(/* args */);
@@ -32,6 +35,7 @@ public:
     void            parseRequest(Client &client, std::vector<config> &config);
     void			parseBody(Client &client);
     void	        send503(fd_set *wSet, std::queue<int> &tmp_clients);
+    void			handleGet(Client &client);
 
 };
 

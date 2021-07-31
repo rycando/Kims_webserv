@@ -1,13 +1,64 @@
 #include "../includes/Helper.hpp"
 
+static const int B64index[256] = { 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 62, 63, 62, 62, 63, 52, 53, 54, 55,
+56, 57, 58, 59, 60, 61,  0,  0,  0,  0,  0,  0,  0,  0,  1,  2,  3,  4,  5,  6,
+7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,  0,
+0,  0,  0, 63,  0, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51 };
+
 Helper::Helper()
 {
-	
+	assignMIME();
 }
 
 Helper::~Helper()
 {
 	
+}
+
+std::string		Helper::decode64(const char *data)
+{
+	while (*data != ' ')
+		data++;
+	data++;
+	unsigned int len = strlen(data);
+	unsigned char* p = (unsigned char*)data;
+    int pad = len > 0 && (len % 4 || p[len - 1] == '=');
+    const size_t L = ((len + 3) / 4 - pad) * 4;
+    std::string str(L / 4 * 3 + pad, '\0');
+
+    for (size_t i = 0, j = 0; i < L; i += 4)
+    {
+        int n = B64index[p[i]] << 18 | B64index[p[i + 1]] << 12 | B64index[p[i + 2]] << 6 | B64index[p[i + 3]];
+        str[j++] = n >> 16;
+        str[j++] = n >> 8 & 0xFF;
+        str[j++] = n & 0xFF;
+    }
+    if (pad)
+    {
+        int n = B64index[p[L]] << 18 | B64index[p[L + 1]] << 12;
+        str[str.size() - 1] = n >> 16;
+
+        if (len > L + 2 && p[L + 2] != '=')
+        {
+            n |= B64index[p[L + 2]] << 6;
+            str.push_back(n >> 8 & 0xFF);
+        }
+    }
+    if (str.back() == 0)
+    	str.pop_back();
+    return (str);
+}
+
+void			Helper::getErrorPage(Client &client)
+{
+	std::string		path;
+
+	path = client._conf["error"] + "/" + client._res.status_code.substr(0, 3) + ".html";
+	client._conf["path"] = path;
+	client._read_fd = open(path.c_str(), O_RDONLY);
 }
 
 int				Helper::fromHexa(const char *nb)
@@ -70,6 +121,68 @@ int				Helper::findLen(Client &client)
 	return (len);
 }
 
+char			**Helper::setEnv(Client &client)
+{
+	char											**env;
+	std::map<std::string, std::string> 				envMap;
+	size_t											pos;
+
+	envMap["GATEWAY_INTERFACE"] = "CGI/1.1";
+	envMap["SERVER_PROTOCOL"] = "HTTP/1.1";
+	envMap["SERVER_SOFTWARE"] = "webserv";
+	envMap["REQUEST_URI"] = client._req.uri;
+	envMap["REQUEST_METHOD"] = client._req.method;
+	envMap["REMOTE_ADDR"] = client._ip;
+	envMap["PATH_INFO"] = client._req.uri;
+	envMap["PATH_TRANSLATED"] = client._conf["path"];
+	envMap["CONTENT_LENGTH"] = std::to_string(client._req.body.size());
+
+	if (client._req.uri.find('?') != std::string::npos)
+		envMap["QUERY_STRING"] = client._req.uri.substr(client._req.uri.find('?') + 1);
+	else
+		envMap["QUERY_STRING"];
+	if (client._req.headers.find("Content-Type") != client._req.headers.end())
+		envMap["CONTENT_TYPE"] = client._req.headers["Content-Type"];
+	if (client._conf.find("exec") != client._conf.end())
+		envMap["SCRIPT_NAME"] = client._conf["exec"];
+	else
+		envMap["SCRIPT_NAME"] = client._conf["path"];
+	if (client._conf["listen"].find(":") != std::string::npos)
+	{
+		envMap["SERVER_NAME"] = client._conf["listen"].substr(0, client._conf["listen"].find(":"));
+		envMap["SERVER_PORT"] = client._conf["listen"].substr(client._conf["listen"].find(":") + 1);
+	}
+	else
+		envMap["SERVER_PORT"] = client._conf["listen"];
+	if (client._req.headers.find("Authorization") != client._req.headers.end())
+	{
+		pos = client._req.headers["Authorization"].find(" ");
+		envMap["AUTH_TYPE"] = client._req.headers["Authorization"].substr(0, pos);
+		envMap["REMOTE_USER"] = client._req.headers["Authorization"].substr(pos + 1);
+		envMap["REMOTE_IDENT"] = client._req.headers["Authorization"].substr(pos + 1);
+	}
+	if (client._conf.find("php") != client._conf.end() && client._req.uri.find(".php") != std::string::npos)
+		envMap["REDIRECT_STATUS"] = "200";
+
+	std::map<std::string, std::string>::iterator b = client._req.headers.begin();
+	while (b != client._req.headers.end())
+	{
+		envMap["HTTP_" + b->first] = b->second;
+		++b;
+	}
+	env = (char **)malloc(sizeof(char *) * (envMap.size() + 1));
+	std::map<std::string, std::string>::iterator it = envMap.begin();
+	int i = 0;
+	while (it != envMap.end())
+	{
+		env[i] = strdup((it->first + "=" + it->second).c_str());
+		++i;
+		++it;
+	}
+	env[i] = NULL;
+	return (env);
+}
+
 void			Helper::fillBody(Client &client)
 {
 	std::string		tmp;
@@ -126,4 +239,90 @@ void			Helper::parseAccept(Client &client, std::multimap<std::string, std::strin
 		std::pair<std::string, std::string>	pair(q, charset);
 		map.insert(pair);
 	}
+}
+
+
+int			Helper::getStatusCode(Client &client)
+{
+	typedef int	(Helper::*ptr)(Client &client);
+	std::map<std::string, ptr> 	map;
+	std::string					credential;
+	int							ret;
+	map["GET"] = &Helper::GETStatus;
+	map["POST"] = &Helper::POSTStatus;
+	map["DELETE"] = &Helper::DELETEStatus;
+
+
+	client._res.version = "HTTP/1.1";
+	client._res.status_code = OK;
+	if (client._conf["methods"].find(client._req.method) == std::string::npos)
+		client._res.status_code = NOTALLOWED;
+	else if (client._conf.find("auth") != client._conf.end())
+	{
+		client._res.status_code = UNAUTHORIZED;
+		if (client._req.headers.find("Authorization") != client._req.headers.end())
+		{
+			credential = decode64(client._req.headers["Authorization"].c_str());
+			if (credential == client._conf["auth"])
+				client._res.status_code = OK;
+		}
+	}
+	
+
+	ret = (this->*map[client._req.method])(client);
+
+	if (ret == 0)
+		getErrorPage(client);
+	return (ret);
+}
+
+std::string		Helper::getLastModified(std::string path)
+{
+	char		buf[BUFFER_SIZE + 1];
+	int			ret;
+	struct tm	*tm;
+	struct stat	file_info;
+
+	if (lstat(path.c_str(), &file_info) == -1)
+		return ("");
+	tm = localtime(&file_info.st_mtime);
+	ret = strftime(buf, BUFFER_SIZE, "%a, %d %b %Y %T %Z", tm);
+	buf[ret] = '\0';
+	return (buf);
+}
+
+std::string		Helper::findType(Client &client)
+{
+	std::string 	extension;
+	size_t			pos;
+
+	if (client._conf["path"].find_last_of('.') != std::string::npos)
+	{
+		pos = client._conf["path"].find('.');
+		extension = client._conf["path"].substr(pos, client._conf["path"].find('.', pos + 1) - pos);
+		if (MIMETypes.find(extension) != MIMETypes.end())
+			return (MIMETypes[extension]);
+		else
+			return (MIMETypes[".bin"]);
+	}
+	return ("");
+}
+
+void			Helper::assignMIME()
+{
+	MIMETypes[".txt"] = "text/plain";
+	MIMETypes[".bin"] = "application/octet-stream";
+	MIMETypes[".jpeg"] = "image/jpeg";
+	MIMETypes[".jpg"] = "image/jpeg";
+	MIMETypes[".html"] = "text/html";
+	MIMETypes[".htm"] = "text/html";
+	MIMETypes[".png"] = "image/png";
+	MIMETypes[".bmp"] = "image/bmp";
+	MIMETypes[".pdf"] = "application/pdf";
+	MIMETypes[".tar"] = "application/x-tar";
+	MIMETypes[".json"] = "application/json";
+	MIMETypes[".css"] = "text/css";
+	MIMETypes[".js"] = "application/javascript";
+	MIMETypes[".mp3"] = "audio/mpeg";
+	MIMETypes[".avi"] = "video/x-msvideo";
 }

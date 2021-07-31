@@ -342,3 +342,97 @@ void			Handler::negotiate(Client &client)
 		client._res.status_code = OK;
 	}
 }
+
+void			Handler::execCGI(Client &client)
+{
+	char			**args = NULL;
+	char			**env = NULL;
+	std::string		path;
+	int				ret;
+	int				tubes[2];
+
+	if (client._conf["php"][0] && client._conf["path"].find(".php") != std::string::npos)
+		path = client._conf["php"];
+	else if (client._conf["exec"][0])
+		path = client._conf["exec"];
+	else
+		path = client._conf["path"];
+	close(client._read_fd);
+	client._read_fd = -1;	
+	args = (char **)(malloc(sizeof(char *) * 3));
+	args[0] = strdup(path.c_str());
+	args[1] = strdup(client._conf["path"].c_str());
+	args[2] = NULL;
+	env = _helper.setEnv(client);
+	client._tmp_fd = open(TMP_PATH, O_WRONLY | O_CREAT, 0666);
+	pipe(tubes);
+	if ((client._cgi_pid = fork()) == 0)
+	{
+		close(tubes[1]);
+		dup2(tubes[0], 0);
+		dup2(client._tmp_fd, 1);
+		errno = 0;
+		ret = execve(path.c_str(), args, env);
+		if (ret == -1)
+		{
+			std::cerr << "Error with CGI: " << strerror(errno) << std::endl;
+			exit(1);
+		}
+	}
+	else
+	{
+		close(tubes[0]);
+		client._write_fd = tubes[1];
+		client._read_fd = open(TMP_PATH, O_RDONLY);
+		client.setFileToWrite(true);
+	}
+	ft::freeAll(args, env);
+}
+
+void		Handler::parseCGIResult(Client &client)
+{
+	size_t			pos;
+	std::string		headers;
+	std::string		key;
+	std::string		value;
+
+	if (client._res.body.find("\r\n\r\n") == std::string::npos)
+		return ;
+	headers = client._res.body.substr(0, client._res.body.find("\r\n\r\n") + 1);
+	pos = headers.find("Status");
+	if (pos != std::string::npos)
+	{
+		client._res.status_code.clear();
+		pos += 8;
+		while (headers[pos] != '\r')
+		{
+			client._res.status_code += headers[pos];
+			pos++;
+		}
+	}
+	pos = 0;
+	while (headers[pos])
+	{
+		while (headers[pos] && headers[pos] != ':')
+		{
+			key += headers[pos];
+			++pos;
+		}
+		++pos;
+		while (headers[pos] && headers[pos] != '\r')
+		{
+			value += headers[pos];
+			++pos;
+		}
+		client._res.headers[key] = value;
+		key.clear();
+		value.clear();
+		if (headers[pos] == '\r')
+			pos++;
+		if (headers[pos] == '\n')
+			pos++;
+	}
+	pos = client._res.body.find("\r\n\r\n") + 4;
+	client._res.body = client._res.body.substr(pos);
+	client._res.headers["Content-Length"] = std::to_string(client._res.body.size());
+}
