@@ -106,7 +106,12 @@ int main(int argc, char** argv)
 			for (std::vector<Client *>::iterator c(server->_clients.begin()); c != server->_clients.end(); c++)
 			{
 				if (!(communicate(&readSet, &writeSet, *server, *c)))
+				{
+					if (*c)
+						delete *c;
+					server->_clients.erase(c);
 					break ;
+				}
 			}
 		}
 	}

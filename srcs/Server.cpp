@@ -172,13 +172,63 @@ void	Server::send503(int fd)
 	
 }
 
-int		Server::readRequest(Client *client)
+int				Server::readRequest(Client *client)
 {
-	return (1);
+	int			length;
+	int			readed;
+	std::string log;
+
+	length = strlen(client->_buf);
+	readed = read(client->_fd, client->_buf, BUFFER_SIZE - length);
+	if (readed > 0)
+	{
+		client->_buf[length] = '\0';
+		if (client->_status != Client::BODYPARSING)
+		{
+			log = "REQUEST:\n";
+			log += client->_buf;
+			ft::logger(log, 1);
+			client->_last_date = ft::getDate();
+			_handler.parseRequest(*client, _conf);
+			client->setWriteState(true);
+		}
+		else
+			_handler.parseBody(*client);
+		return (1);
+	}
+	return (0);
 }
 
-int		Server::writeResponse(Client *client)
+int					Server::writeResponse(Client *client)
 {
+	unsigned long	length;
+	std::string		log;
+
+	switch (client->_status)
+	{
+		case Client::RESPONSE:
+			ft::getline(client->_response, log, '\n');
+			ft::logger(std::string("RESPONSE:\n") + log, 1);
+			length = write(client->_fd, client->_response.c_str(), client->_response.size());
+			if (length < client->_response.size())
+				client->_response = client->_response.substr(length);
+			else
+			{
+				client->_response.clear();
+				client->setToStandBy();
+			}
+			client->_last_date = ft::getDate();
+			break;
+		case Client::STANDBY:
+			if (getTimeDiff(client->_last_date) >= TIMEOUT)
+				client->_status = Client::DONE;
+			break ;
+		case Client::DONE:
+			ft::logger("[" + std::to_string(_port) + "] " + "connected clients: " + std::to_string(_clients.size()), 1);
+			return (0);
+		// default:
+		// 	_handler.dispatcher(*client);
+	}
 	return (1);
 }
 
@@ -199,6 +249,22 @@ const char			*Server::ServerException::what(void) const throw()
 	return (this->error.c_str());
 }
 
-fd_set *Server::getWSet(){
+fd_set	*Server::getWSet(){
 	return _wSet;
+}
+
+int		Server::getTimeDiff(std::string start)
+{
+	struct tm		start_tm;
+	struct tm		*now_tm;
+	struct timeval	time;
+	int				result;
+
+	strptime(start.c_str(), "%a, %d %b %Y %T", &start_tm);
+	gettimeofday(&time, NULL);
+	now_tm = localtime(&time.tv_sec);
+	result = (now_tm->tm_hour - start_tm.tm_hour) * 3600;
+	result += (now_tm->tm_min - start_tm.tm_min) * 60;
+	result += (now_tm->tm_sec - start_tm.tm_sec);
+	return (result);
 }
