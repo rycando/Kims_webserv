@@ -3,6 +3,7 @@
 
 #include "Webserv.hpp"
 #include "HttpMessage.hpp"
+#include "utils.hpp"
 
 #define BUFFER_SIZE 32768
 #define TMP_PATH 	"/tmp/cgi.tmp"
@@ -61,10 +62,10 @@ class Client
 		void	readFile();
 		void	writeFile();
 
-		void	setReadState(bool state);
-		void	setWriteState(bool state);
-		void	setFileToRead(bool state);
-		void	setFileToWrite(bool state);
+		void	setReadState(bool status);
+		void	setWriteState(bool status);
+		void	setFileToRead(bool status);
+		void	setFileToWrite(bool status);
 		void	setToStandBy();
 };
 	

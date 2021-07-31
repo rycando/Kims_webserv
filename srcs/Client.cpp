@@ -65,6 +65,23 @@ void	Client::setFileToWrite(bool status)
 	}
 }
 
+void	Client::setReadState(bool status)
+{
+	if (status)
+		FD_SET(_fd, _rSet);
+	else
+		FD_CLR(_fd, _rSet);
+}
+
+
+void	Client::setWriteState(bool status)
+{
+	if (status)
+		FD_SET(_fd, _wSet);
+	else
+		FD_CLR(_fd, _wSet);
+}
+
 void	Client::readFile()
 {
 	int ret;
@@ -126,4 +143,21 @@ void	Client::writeFile()
 		setFileToWrite(false);
 		_write_fd = -1;
 	}
+}
+
+void	Client::setToStandBy()
+{
+	ft::logger(_req.method + "from " + _ip + ":" + std::to_string(_port) + "answered", 1);
+	_status = STANDBY;
+	setReadState(true);
+	if (_read_fd != -1)
+		close(_read_fd);
+	if (_write_fd != -1)
+		close(_write_fd);
+	_read_fd = -1;
+	_write_fd = -1;
+	memset((void *)_buf, 0, (size_t)(BUFFER_SIZE + 1));
+	_conf.clear(); 
+	_req.clear();
+	_res.clear();
 }

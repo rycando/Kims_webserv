@@ -1,7 +1,7 @@
 #ifndef UTILS_HPP
 # define UTILS_HPP
 
-#include "./Webserv.hpp"
+#include "Webserv.hpp"
 
 #define BUFFER_SIZE 32768
 
@@ -11,6 +11,7 @@ namespace ft
 	int			getpower(int nb, int power);
 	std::string	getDate();
 	void		freeAll(char **args, char **env);
+	void		logger(std::string const &message, int param);
 }
 
 #endif

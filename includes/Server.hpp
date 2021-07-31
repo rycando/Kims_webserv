@@ -2,10 +2,12 @@
 # define Server_HPP
 
 #define PORT 9000
+#define TIMEOUT 10
 
 #include "Webserv.hpp"
 #include "Handler.hpp"
 #include "Client.hpp"
+#include "utils.hpp"
 
 class Server
 {
@@ -23,7 +25,7 @@ class Server
 		fd_set					*_writeSet;
 		fd_set					*_rSet;
 		fd_set					*_wSet;
-		// Handler					_handler;
+		Handler					_handler;
 
 	public:
 	
@@ -45,6 +47,7 @@ class Server
 		void	send503(int fd);
 		int		readRequest(Client *client);
 		int		writeResponse(Client *client);
+		int		getTimeDiff(std::string start);
 		fd_set *getWSet();
 
 	class		ServerException: public std::exception

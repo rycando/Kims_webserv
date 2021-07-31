@@ -1,8 +1,8 @@
 #include "utils.hpp"
+#include <fstream>
 
 namespace ft
 {
-
 	void	getline(std::string &buffer, std::string &line, char delim)
 	{
 		size_t					pos;
@@ -60,5 +60,19 @@ namespace ft
 			++i;
 		}
 		free(env);
+	}
+
+	void				logger(std::string const &message, int param)
+	{
+		std::ofstream	writeFile;
+
+		if (param > 0)
+			std::cout << message << std::endl;
+		else
+		{
+			writeFile.open("WebLog", std::ofstream::app);
+			writeFile << message << std::endl;
+			writeFile.close();
+		}
 	}
 }
