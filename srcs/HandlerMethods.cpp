@@ -1,5 +1,17 @@
 #include "../includes/Handler.hpp"
 
+void	Handler::dispatcher(Client &client)
+{
+	typedef void	(Handler::*ptr)(Client &client);
+	std::map<std::string, ptr> map;
+
+	map["GET"] = &Handler::handleGet;
+	// map["POST"] = &Handler::handlePost;
+	// map["DELETE"] = &Handler::handleDelete;
+
+	(this->*map[client._req.method])(client);
+}
+
 void	Handler::send503(fd_set *wSet, std::queue<int> &tmp_clients)
 {
 	Response		response;
