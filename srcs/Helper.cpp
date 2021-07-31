@@ -241,17 +241,16 @@ void			Helper::parseAccept(Client &client, std::multimap<std::string, std::strin
 	}
 }
 
-
 int			Helper::getStatusCode(Client &client)
 {
 	typedef int	(Helper::*ptr)(Client &client);
 	std::map<std::string, ptr> 	map;
 	std::string					credential;
 	int							ret;
-	// map["GET"] = &Helper::GETStatus;
-	// map["POST"] = &Helper::POSTStatus;
-	// map["DELETE"] = &Helper::DELETEStatus;
 
+	map["GET"] = &Helper::GETStatus;
+	map["POST"] = &Helper::POSTStatus;
+	map["DELETE"] = &Helper::DELETEStatus;
 
 	client._res.version = "HTTP/1.1";
 	client._res.status_code = OK;
@@ -267,7 +266,6 @@ int			Helper::getStatusCode(Client &client)
 				client._res.status_code = OK;
 		}
 	}
-	
 
 	ret = (this->*map[client._req.method])(client);
 

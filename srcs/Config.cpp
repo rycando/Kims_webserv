@@ -118,13 +118,13 @@ void Config::parse_conf(std::string &buf, std::string line, std::string &context
         line.clear();
 }
 
-void Config::parse(char *file, std::vector<Server> &servers) {
+void Config::parse(char *file, std::vector<Server> &servers)
+{
     std::string buf;
     std::string context;
     Config::config config;
     std::string line;
     Server server;
-
 
     buf = read_file(file);
     while (!buf.empty())

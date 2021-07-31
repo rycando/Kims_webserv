@@ -36,6 +36,7 @@ public:
     void			parseBody(Client &client);
     void	        send503(fd_set *wSet, std::queue<int> &tmp_clients);
     void			handleGet(Client &client);
+    void            handlePost(Client &client);
 
 };
 

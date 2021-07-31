@@ -117,6 +117,8 @@ void	Server::holdConnection()
 	len = sizeof(struct sockaddr);
 	if ((fd = accept(_fd, (struct sockaddr *)&c_addr, &len)) == -1)
 		throw (ServerException("accept() error in holdConnection(): ", std::string(strerror(errno))));
+	std::cout << _clients.size() << std::endl;
+
 	if (_tmp_clients.size() < 10)
 	{
 		_tmp_clients.push(fd);
@@ -143,6 +145,7 @@ void	Server::acceptConnection()
 		_maxFd = fd;
 	client = new Client(fd, _rSet, _wSet, c_addr);
 	_clients.push_back(client);
+	std::cout << _clients.size() << std::endl;
 }
 
 int		Server::getOpenFd()
@@ -226,8 +229,8 @@ int					Server::writeResponse(Client *client)
 		case Client::DONE:
 			ft::logger("[" + std::to_string(_port) + "] " + "connected clients: " + std::to_string(_clients.size()), 1);
 			return (0);
-		// default:
-		// 	_handler.dispatcher(*client);
+		default:
+			_handler.dispatcher(*client);
 	}
 	return (1);
 }

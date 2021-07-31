@@ -90,3 +90,36 @@ void	Handler::handleGet(Client &client)
 			break;
 	}
 }
+
+void		Handler::handlePost(Client &client)
+{
+	switch (client._status)
+	{
+		case Client::BODYPARSING:
+			parseBody(client);
+			break;
+		case Client::CODE:
+			_helper.getStatusCode(client);
+			if (((client._conf.find("CGI") != client._conf.end() &&
+				client._req.uri.find(client._conf["CGI"]) != std::string::npos) ||
+				(client._conf.find("php") != client._conf.end() &&
+				client._req.uri.find(".php") != std::string::npos))
+				&& client._res.status_code == OK)
+			{
+				execCGI(client); // 요청된 프로세스 실행
+				client._status = Client::CGI;
+				client.setFileToRead(true);
+			}
+ 
+
+
+		case Client::CGI:
+
+		case Client::HEADERS:
+
+		case Client::BODY:
+
+
+
+	}
+}

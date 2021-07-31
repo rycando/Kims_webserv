@@ -31,9 +31,9 @@ public:
     ~Helper();
 
     int				getStatusCode(Client &client);
-    // int				GETStatus(Client &client);
-    // int				POSTStatus(Client &client);
-    // int				DELETEStatus(Client &client);
+    int				GETStatus(Client &client);
+    int				POSTStatus(Client &client);
+    int				DELETEStatus(Client &client);
 };
 
 #endif

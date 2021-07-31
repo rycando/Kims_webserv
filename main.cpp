@@ -99,10 +99,12 @@ int main(int argc, char** argv)
 			{
 				std::cerr << e.what() << '\n';
 			}
-			
+
 			if (!server->_tmp_clients.empty())
 				handler.send503(server->getWSet(), server->_tmp_clients);
-			
+
+			// std::cout << server->_clients.size() << std::endl;
+
 			for (std::vector<Client *>::iterator c(server->_clients.begin()); c != server->_clients.end(); c++)
 			{
 				if (!(communicate(&readSet, &writeSet, *server, *c)))
