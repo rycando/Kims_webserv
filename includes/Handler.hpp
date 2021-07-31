@@ -22,7 +22,7 @@ private:
     void	negotiate(Client &client);
     void    getBody(Client &client);
     void    execCGI(Client &client);
-    void	wparseCGIResult(Client &client);
+    void	parseCGIResult(Client &client);
 
 
 public:
@@ -38,5 +38,6 @@ public:
     void			handleGet(Client &client);
 
 };
+
 
 #endif
