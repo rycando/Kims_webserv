@@ -252,9 +252,11 @@ const char			*Server::ServerException::what(void) const throw()
 	return (this->error.c_str());
 }
 
+
 fd_set	*Server::getWSet(){
 	return _wSet;
 }
+
 
 int		Server::getTimeDiff(std::string start)
 {

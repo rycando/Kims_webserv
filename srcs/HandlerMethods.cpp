@@ -6,8 +6,8 @@ void	Handler::dispatcher(Client &client)
 	std::map<std::string, ptr> map;
 
 	map["GET"] = &Handler::handleGet;
-	// map["POST"] = &Handler::handlePost;
-	// map["DELETE"] = &Handler::handleDelete;
+	map["POST"] = &Handler::handlePost;
+	map["DELETE"] = &Handler::handleDelete;
 
 	(this->*map[client._req.method])(client);
 }
@@ -103,6 +103,61 @@ void	Handler::handleGet(Client &client)
 	}
 }
 
+void		Handler::postInCode(Client &client)
+{
+	_helper.getStatusCode(client);
+	if (((client._conf.find("CGI") != client._conf.end() && client._req.uri.find(client._conf["CGI"]) != std::string::npos) ||
+		(client._conf.find("php") != client._conf.end() && client._req.uri.find(".php") != std::string::npos))
+		&& client._res.status_code == OK)
+	{
+		execCGI(client); // 요청된 프로세스 실행
+		client._status = Client::CGI;
+		client.setFileToRead(true);
+	}
+	else
+	{
+		if (client._res.status_code == OK)
+			client.setFileToWrite(true);
+		else
+			client.setFileToRead(true);
+		client._status = Client::HEADERS;
+	}
+}
+
+void		Handler::postInCGI(Client &client)
+{
+	if (client._read_fd == -1)
+	{
+		parseCGIResult(client);
+		client._status = Client::HEADERS;
+	}
+}
+
+void		Handler::postInHeaders(Client &client)
+{
+	if (client._res.status_code == UNAUTHORIZED)
+		client._res.headers["WWW-Authenticate"] = "Basic";
+	else if (client._res.status_code == NOTALLOWED)
+		client._res.headers["Allow"] = client._conf["methods"];
+	client._res.headers["Date"] = ft::getDate();
+	client._res.headers["Server"] = "webserv";
+	if (client._res.status_code == OK && !((client._conf.find("CGI") != client._conf.end() && client._req.uri.find(client._conf["CGI"]) != std::string::npos)
+		|| (client._conf.find("php") != client._conf.end() && client._req.uri.find(".php") != std::string::npos)))
+		client._res.body = "File modified\n";
+	client._status = Client::BODY;
+}
+
+void		Handler::postInBody(Client &client)
+{
+	if (client._read_fd == -1 && client._write_fd == -1)
+	{
+		if (client._res.headers["Content-Length"][0] == '\0')
+			client._res.headers["Content-Length"] = std::to_string(client._res.body.size());
+		createResponse(client);
+		client._status = Client::RESPONSE;
+	}
+}
+
 void		Handler::handlePost(Client &client)
 {
 	switch (client._status)
@@ -111,28 +166,17 @@ void		Handler::handlePost(Client &client)
 			parseBody(client);
 			break;
 		case Client::CODE:
-			_helper.getStatusCode(client);
-			if (((client._conf.find("CGI") != client._conf.end() &&
-				client._req.uri.find(client._conf["CGI"]) != std::string::npos) ||
-				(client._conf.find("php") != client._conf.end() &&
-				client._req.uri.find(".php") != std::string::npos))
-				&& client._res.status_code == OK)
-			{
-				execCGI(client); // 요청된 프로세스 실행
-				client._status = Client::CGI;
-				client.setFileToRead(true);
-			}
- 
-
-
+			postInCode(client);
+			break;
 		case Client::CGI:
-
+			postInCGI(client);
+			break;
 		case Client::HEADERS:
-
+			postInHeaders(client);
+			break ;
 		case Client::BODY:
-
-
-
+			postInBody(client);
+			break ;
 	}
 }
 

@@ -27,6 +27,11 @@ private:
     void    handlePost(Client &client);
     void    handleDelete(Client &client);
 
+    void    postInCode(Client &client);
+    void    postInCGI(Client &client);
+    void    postInHeaders(Client &client);
+    void    postInBody(Client &client);
+
 
 public:
     Handler(/* args */);
@@ -39,7 +44,6 @@ public:
     void	createResponse(Client &client);
     void    dispatcher(Client &client);
     void    send503(fd_set *wSet, std::queue<int> &tmp_clients);
-
 
 };
 
