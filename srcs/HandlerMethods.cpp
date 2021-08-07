@@ -47,59 +47,58 @@ void	Handler::send503(fd_set *wSet, std::queue<int> &tmp_clients)
 	}
 }
 
-void	Handler::handleGet(Client &client)
+void	Handler::getInCode(Client &client, struct stat *file_info)
 {
-	struct stat	file_info;
-
-	switch (client._status)
+	_helper.getStatusCode(client);
+	fstat(client._read_fd, file_info);
+	if (S_ISDIR((*file_info).st_mode) && client._conf["listing"] == "on")
+		createListing(client);
+	if (client._res.status_code == NOTFOUND)
+		negotiate(client);
+	if (((client._conf.find("CGI") != client._conf.end() && client._req.uri.find(client._conf["CGI"]) != std::string::npos)
+	|| (client._conf.find("php") != client._conf.end() && client._req.uri.find(".php") != std::string::npos))
+	&& client._res.status_code == OK)
 	{
-		case Client::CODE:
-			_helper.getStatusCode(client);
-			fstat(client._read_fd, &file_info);
-			if (S_ISDIR(file_info.st_mode) && client._conf["listing"] == "on")
-				createListing(client);
-			if (client._res.status_code == NOTFOUND)
-				negotiate(client);
-			if (((client._conf.find("CGI") != client._conf.end() && client._req.uri.find(client._conf["CGI"]) != std::string::npos)
-			|| (client._conf.find("php") != client._conf.end() && client._req.uri.find(".php") != std::string::npos))
-			&& client._res.status_code == OK)
-			{
-				execCGI(client);
-				client._status = Client::CGI;
-			}
-			else
-				client._status = Client::HEADERS;
-			client.setFileToRead(true);	
-			break ;
-		case Client::CGI:
-			if (client._read_fd == -1)
-			{
-				parseCGIResult(client);
-				client._status = Client::HEADERS;
-			}
-			break ;
-		case Client::HEADERS:
-			lstat(client._conf["path"].c_str(), &file_info);
-			if (!S_ISDIR(file_info.st_mode))
-				client._res.headers["Last-Modified"] = _helper.getLastModified(client._conf["path"]);
-			if (client._res.headers["Content-Type"][0] == '\0')
-				client._res.headers["Content-Type"] = _helper.findType(client);
-			if (client._res.status_code == UNAUTHORIZED)
-				client._res.headers["WWW-Authenticate"] = "Basic";
-			else if (client._res.status_code == NOTALLOWED)
-				client._res.headers["Allow"] = client._conf["methods"];
-			client._res.headers["Date"] = ft::getDate();
-			client._res.headers["Server"] = "webserv";
-			client._status = Client::BODY;
-			break ;
-		case Client::BODY:
-			if (client._read_fd == -1)
-			{
-				client._res.headers["Content-Length"] = std::to_string(client._res.body.size());
-				createResponse(client);
-				client._status = Client::RESPONSE;
-			}
-			break;
+		execCGI(client);
+		client._status = Client::CGI;
+	}
+	else
+		client._status = Client::HEADERS;
+	client.setFileToRead(true);	
+}
+
+void	Handler::getInCGI(Client &client)
+{
+	if (client._read_fd == -1)
+	{
+		parseCGIResult(client);
+		client._status = Client::HEADERS;
+	}
+}
+
+void	Handler::getInHeaders(Client &client, struct stat *file_info)
+{
+	lstat(client._conf["path"].c_str(), file_info);
+	if (!S_ISDIR((*file_info).st_mode))
+		client._res.headers["Last-Modified"] = _helper.getLastModified(client._conf["path"]);
+	if (client._res.headers["Content-Type"][0] == '\0')
+		client._res.headers["Content-Type"] = _helper.findType(client);
+	if (client._res.status_code == UNAUTHORIZED)
+		client._res.headers["WWW-Authenticate"] = "Basic";
+	else if (client._res.status_code == NOTALLOWED)
+		client._res.headers["Allow"] = client._conf["methods"];
+	client._res.headers["Date"] = ft::getDate();
+	client._res.headers["Server"] = "webserv";
+	client._status = Client::BODY;
+}
+
+void	Handler::getInBody(Client &client)
+{
+	if (client._read_fd == -1)
+	{
+		client._res.headers["Content-Length"] = std::to_string(client._res.body.size());
+		createResponse(client);
+		client._status = Client::RESPONSE;
 	}
 }
 
@@ -158,6 +157,55 @@ void		Handler::postInBody(Client &client)
 	}
 }
 
+void	Handler::deleteInCode(Client &client)
+{
+	if (!_helper.getStatusCode(client))
+		client.setFileToRead(true);
+	client._res.headers["Date"] = ft::getDate();
+	client._res.headers["Server"] = "webserv";
+	if (client._res.status_code == OK)
+	{
+		unlink(client._conf["path"].c_str());				
+		client._res.body = "File deleted\n";
+	}
+	else if (client._res.status_code == NOTALLOWED)
+		client._res.headers["Allow"] = client._conf["methods"];
+	else if (client._res.status_code == UNAUTHORIZED)
+		client._res.headers["WWW-Authenticate"] = "Basic";
+	client._status = Client::BODY;
+}
+
+void	Handler::deleteInBody(Client &client)
+{
+	if (client._read_fd == -1)
+	{
+		client._res.headers["Content-Length"] = std::to_string(client._res.body.size());
+		createResponse(client);
+		client._status = Client::RESPONSE;
+	}
+}
+
+void	Handler::handleGet(Client &client)
+{
+	struct stat	file_info;
+
+	switch (client._status)
+	{
+		case Client::CODE:
+			getInCode(client, &file_info);
+			break ;
+		case Client::CGI:
+			getInCGI(client);
+			break ;
+		case Client::HEADERS:
+			getInHeaders(client, &file_info);
+			break ;
+		case Client::BODY:
+			getInBody(client);
+			break;
+	}
+}
+
 void		Handler::handlePost(Client &client)
 {
 	switch (client._status)
@@ -185,28 +233,10 @@ void	Handler::handleDelete(Client &client)
 	switch (client._status)
 	{
 		case Client::CODE:
-			if (!_helper.getStatusCode(client))
-				client.setFileToRead(true);
-			client._res.headers["Date"] = ft::getDate();
-			client._res.headers["Server"] = "webserv";
-			if (client._res.status_code == OK)
-			{
-				unlink(client._conf["path"].c_str());				
-				client._res.body = "File deleted\n";
-			}
-			else if (client._res.status_code == NOTALLOWED)
-				client._res.headers["Allow"] = client._conf["methods"];
-			else if (client._res.status_code == UNAUTHORIZED)
-				client._res.headers["WWW-Authenticate"] = "Basic";
-			client._status = Client::BODY;
+			deleteInCode(client);
 			break ;
 		case Client::BODY:
-			if (client._read_fd == -1)
-			{
-				client._res.headers["Content-Length"] = std::to_string(client._res.body.size());
-				createResponse(client);
-				client._status = Client::RESPONSE;
-			}
+			deleteInBody(client);
 			break ;
 	}
 }

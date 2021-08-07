@@ -32,6 +32,14 @@ private:
     void    postInHeaders(Client &client);
     void    postInBody(Client &client);
 
+    void    getInCode(Client &client, struct stat *file_info);
+    void    getInCGI(Client &client);
+    void    getInHeaders(Client &client, struct stat *file_info);
+    void    getInBody(Client &client);
+
+    void    deleteInCode(Client &client);
+    void    deleteInBody(Client &client);
+
 
 public:
     Handler(/* args */);
