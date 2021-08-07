@@ -84,9 +84,15 @@ void Server::connect(int openFd)
 	if (FD_ISSET(_fd, _readSet))
 	{
 		if (openFd > MAX_FD)
+		{
+			std::cout << "reject connection" << std::endl;	
 			holdConnection();
+		}
 		else
+		{
+			std::cout << "accept connection" << std::endl;
 			acceptConnection();
+		}
 	}
 }
 
@@ -154,6 +160,8 @@ int				Server::readRequest(Client *client)
 	int			length;
 	int			readed;
 	std::string log;
+
+	std::cout << "readRequest" << std::endl;
 
 	length = strlen(client->_buf);
 	readed = read(client->_fd, client->_buf, BUFFER_SIZE - length);
