@@ -135,3 +135,34 @@ void		Handler::handlePost(Client &client)
 
 	}
 }
+
+void	Handler::handleDelete(Client &client)
+{
+	switch (client._status)
+	{
+		case Client::CODE:
+			if (!_helper.getStatusCode(client))
+				client.setFileToRead(true);
+			client._res.headers["Date"] = ft::getDate();
+			client._res.headers["Server"] = "webserv";
+			if (client._res.status_code == OK)
+			{
+				unlink(client._conf["path"].c_str());				
+				client._res.body = "File deleted\n";
+			}
+			else if (client._res.status_code == NOTALLOWED)
+				client._res.headers["Allow"] = client._conf["methods"];
+			else if (client._res.status_code == UNAUTHORIZED)
+				client._res.headers["WWW-Authenticate"] = "Basic";
+			client._status = Client::BODY;
+			break ;
+		case Client::BODY:
+			if (client._read_fd == -1)
+			{
+				client._res.headers["Content-Length"] = std::to_string(client._res.body.size());
+				createResponse(client);
+				client._status = Client::RESPONSE;
+			}
+			break ;
+	}
+}

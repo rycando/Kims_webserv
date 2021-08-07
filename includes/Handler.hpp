@@ -17,12 +17,15 @@ private:
     bool    checkSyntax(const Request &req);
     void    getConf(Client &client, Request &req, std::vector<config> &conf);
     void	dechunkBody(Client &client);
-    void	createResponse(Client &client);
     void	createListing(Client &client);
     void	negotiate(Client &client);
     void    getBody(Client &client);
     void    execCGI(Client &client);
     void	parseCGIResult(Client &client);
+
+    void    handleGet(Client &client);
+    void    handlePost(Client &client);
+    void    handleDelete(Client &client);
 
 
 public:
@@ -31,13 +34,12 @@ public:
 
     Helper	_helper;
 
+    void    parseRequest(Client &client, std::vector<config> &config);
+    void    parseBody(Client &client);
+    void	createResponse(Client &client);
+    void    dispatcher(Client &client);
+    void    send503(fd_set *wSet, std::queue<int> &tmp_clients);
 
-    void            parseRequest(Client &client, std::vector<config> &config);
-    void			parseBody(Client &client);
-    void			dispatcher(Client &client);
-    void	        send503(fd_set *wSet, std::queue<int> &tmp_clients);
-    void			handleGet(Client &client);
-    void            handlePost(Client &client);
 
 };
 
