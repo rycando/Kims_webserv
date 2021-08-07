@@ -8,6 +8,8 @@
 
 class Handler
 {
+    friend class Helper;
+
     typedef std::map<std::string, std::string> 	elmt;
 	typedef std::map<std::string, elmt>			config;
     

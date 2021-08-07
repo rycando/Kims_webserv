@@ -9,6 +9,7 @@ SRCS = 	./srcs/Server.cpp \
 		./srcs/Handler.cpp \
 		./srcs/HandlerMethods.cpp \
 		./srcs/utils.cpp \
+		./srcs/Communicate.cpp \
 		main.cpp
 
 # OBJS = $(SRCS:%.cpp=%.o)
