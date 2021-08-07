@@ -5,12 +5,9 @@
 #include "Status.hpp"
 #include "Client.hpp"
 #include "utils.hpp"
-#include "Status.hpp"
-#include "Handler.hpp"
 
 class Helper
 {
-    friend class Helper;
 
 private:
     /* data */
