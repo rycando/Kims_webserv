@@ -41,7 +41,7 @@ class Server
 		int		getFd() const;
 		int		getMaxFd();
 		int		getOpenFd();
-		void	connect(int openFd);
+		void	connect(int openFd, fd_set *readSet);
 		void	holdConnection();
 		void	acceptConnection();
 		void	send503(int fd);

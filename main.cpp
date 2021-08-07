@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 				break ;
 			try
 			{
-				server->connect(getOpenFd(g_servers));
+				server->connect(getOpenFd(g_servers), &readSet);
 			}
 			catch(const std::exception& e)
 			{

@@ -77,17 +77,31 @@ void Server::init(fd_set *readSet, fd_set *writeSet, fd_set *rSet, fd_set *wSet)
 	_maxFd = _fd;
 }
 
-void Server::connect(int openFd)
+void Server::connect(int openFd, fd_set *Set)
 {
-	int						MAX_FD = 256 - 20;
+	int					MAX_FD = 256 - 20;
+	int					ret;
 
-	if (FD_ISSET(_fd, _readSet))
+
+	if ((ret = FD_ISSET(_fd, Set)))
 	{
+		std::cout << "pass FD_ISSET" << std::endl;
+
 		if (openFd > MAX_FD)
+		{
+			std::cout << "before holdConnection" << std::endl;
 			holdConnection();
+			std::cout << "after holdConnection" << std::endl;
+		}
 		else
+		{
+			std::cout << "before acceptConnection" << std::endl;
 			acceptConnection();
+			std::cout << "connect" << std::endl;
+		}
 	}
+	// else
+	// 	std::cout << ret << std::endl;
 }
 
 void	Server::holdConnection()

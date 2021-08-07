@@ -70,7 +70,7 @@ namespace ft
 			std::cout << message << std::endl;
 		else
 		{
-			writeFile.open("WebLog", std::ofstream::app);
+			writeFile.open("./WebLog", std::ofstream::app);
 			writeFile << message << std::endl;
 			writeFile.close();
 		}

@@ -11,6 +11,8 @@ Client::Client(int fd, fd_set *r, fd_set *w, struct sockaddr_in c_addr)
 	fcntl(_fd, F_SETFL, O_NONBLOCK);
 	FD_SET(_fd, _rSet);
 	FD_SET(_fd, _wSet);
+	_last_date = ft::getDate();
+	ft::logger("new connection from " + _ip + ":" + std::to_string(_port), 1);
 }
 
 Client::~Client()
@@ -41,6 +43,7 @@ Client::~Client()
 		FD_CLR(_tmp_fd, _rSet);
 		FD_CLR(_tmp_fd, _wSet);		
 	}
+	ft::logger("connection closed from " + _ip + ":" + std::to_string(_port), 1);
 }
 
 void	Client::setFileToRead(bool state)
@@ -133,7 +136,7 @@ void	Client::writeFile()
 	
 	write_size = write(_write_fd, _req.body.c_str(), _req.body.size());
 	if (_cgi_pid != -1)
-		std::cout << "sent " << write_size << " bytes to CGI stdin\n";
+		ft::logger("sent " + std::to_string(write_size) + " bytes to CGI stdin", 1);
 	if ((unsigned long)write_size < _req.body.size())
 		_req.body = _req.body.substr(write_size);
 	else
