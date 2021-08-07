@@ -69,34 +69,27 @@ int				Helper::fromHexa(const char *nb)
 	int		i;
 	int		index;
 
-	i = 0;
-	while (nb[i])
+	i = -1;
+	while (nb[++i])
 	{
-		int j = 0;
-		while (base[j])
-		{
+		int j = -1;
+		while (base[++j])
 			if (nb[i] == base[j])
 			{
 				index = j;
 				break ;
 			}
-			j++;
-		}
 		if (j == 16)
 		{
-			j = 0;
-			while (base2[j])
-			{
+			j = -1;
+			while (base2[++j])
 				if (nb[i] == base2[j])
 				{
 					index = j;
 					break ;
 				}
-				j++;
-			}
 		}
 		result += index * ft::getpower(16, (strlen(nb) - 1) - i);
-		i++;
 	}
 	return (result);
 }
