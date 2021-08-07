@@ -99,3 +99,25 @@ int			Helper::POSTStatus(Client &client)
 	}
 	return (0);
 }
+
+int			Helper::DELETEStatus(Client &client)
+{
+	int 		fd;
+	struct stat	info;
+	int			save_err;
+
+	if (client._res.status_code == OK)
+	{
+		errno = 0;
+		fd = open(client._conf["path"].c_str(), O_RDONLY);
+		save_err = errno;
+		fstat(fd, &info);
+		if ((fd == -1 && save_err == ENOENT) || S_ISDIR(info.st_mode)) //ENONET : No such file or directory , S_ISDIR(m) : ((m) & S_IFMT) == S_IFDIR
+			client._res.status_code = NOTFOUND;
+		else if (fd == -1)
+			client._res.status_code = INTERNALERROR;
+		else
+			return (1);
+	}
+	return (0);
+}
