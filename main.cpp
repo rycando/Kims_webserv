@@ -2,7 +2,7 @@
 // #include "./includes/Server.hpp"
 #include "./includes/Config.hpp"
 // #include "./includes/Client.hpp"
-// #include "./includes/Handler.hpp"
+#include "./includes/Handler.hpp"
 // #include "./includes/Webserv.hpp"
 
 std::vector<Server>		g_servers;
@@ -12,7 +12,6 @@ int main(int argc, char** argv)
 	Server	server;
 	Config	config;
 	Handler handler;
-	Client	*client;
 	fd_set	readSet;
 	fd_set	writeSet;
 	fd_set	rSet;

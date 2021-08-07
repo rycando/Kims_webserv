@@ -26,7 +26,6 @@ public:
     void			assignMIME();
 
 
-
     Helper(/* args */);
     ~Helper();
 

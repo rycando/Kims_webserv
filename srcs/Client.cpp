@@ -1,7 +1,7 @@
 #include "../includes/Client.hpp"
 
 Client::Client(int fd, fd_set *r, fd_set *w, struct sockaddr_in c_addr)
- : _fd(fd), _tmp_fd(-1), _read_fd(-1), _write_fd(-1), _rSet(r), _wSet(w), _cgi_pid(-1) 
+ : _cgi_pid(-1), _tmp_fd(-1), _rSet(r), _wSet(w), _fd(fd), _read_fd(-1), _write_fd(-1)
 {
 	_status = STANDBY;
 	_ip = inet_ntoa(c_addr.sin_addr);
@@ -134,7 +134,7 @@ void	Client::writeFile()
 	write_size = write(_write_fd, _req.body.c_str(), _req.body.size());
 	if (_cgi_pid != -1)
 		std::cout << "sent " << write_size << " bytes to CGI stdin\n";
-	if (write_size < _req.body.size())
+	if ((unsigned long)write_size < _req.body.size())
 		_req.body = _req.body.substr(write_size);
 	else
 	{

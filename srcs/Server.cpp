@@ -79,10 +79,7 @@ void Server::init(fd_set *readSet, fd_set *writeSet, fd_set *rSet, fd_set *wSet)
 
 void Server::connect(int openFd)
 {
-	// struct timeval			timeout;
 	int						MAX_FD = 256 - 20;
-
-	// select(this->_fd + 1, this->_readSet, this->_writeSet, NULL, &timeout);
 
 	if (FD_ISSET(_fd, _readSet))
 	{
@@ -91,21 +88,6 @@ void Server::connect(int openFd)
 		else
 			acceptConnection();
 	}
-
-	// while (true)
-	// {
-	// 	//5. 클라이언트 연결 요청 수신
-	// 	len = sizeof(c_addr);
-	// 	c_socket = accept(s_socket, (struct sockaddr *)&c_addr, (socklen_t *)&len);
-
-	// 	//6. 클라이언트 요청 서비스 제공
-	// 	n = strlen(buffer);
-	// 	write(c_socket, buffer, n);
-	// 	//7. 클라이언트와 연결 종료
-	// 	close(c_socket);
-	// }
-	// close(s_socket);
-
 }
 
 void	Server::holdConnection()
@@ -166,14 +148,6 @@ int		Server::getOpenFd()
 	return (openFd);
 }
 
-void	Server::send503(int fd)
-{
-	Response response;
-	
-	response.version = "HTTP/1.1";
-	// response.status_code = UNAVAILABLE;
-	
-}
 
 int				Server::readRequest(Client *client)
 {
