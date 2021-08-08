@@ -26,6 +26,7 @@ private:
     void    handleGet(Client &client);
     void    handlePost(Client &client);
     void    handleDelete(Client &client);
+    void    handleBadRequest(Client &client);
 
     void    postInCode(Client &client);
     void    postInCGI(Client &client);

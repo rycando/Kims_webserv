@@ -8,6 +8,7 @@ void	Handler::dispatcher(Client &client)
 	map["GET"] = &Handler::handleGet;
 	map["POST"] = &Handler::handlePost;
 	map["DELETE"] = &Handler::handleDelete;
+	map["BAD"] = &Handler::handleBadRequest;
 
 	std::cout << "dispatcher\n";
 
@@ -241,6 +242,33 @@ void	Handler::handleDelete(Client &client)
 			break ;
 		case Client::BODY:
 			deleteInBody(client);
+			break ;
+	}
+}
+
+void	Handler::handleBadRequest(Client &client)
+{
+	struct stat		file_info;
+
+	switch (client._status)
+	{
+		case Client::CODE:
+			client._res.version = "HTTP/1.1";
+			client._res.status_code = BADREQUEST;
+			_helper.getErrorPage(client);
+			fstat(client._read_fd, &file_info);
+			client.setFileToRead(true);
+			client._res.headers["Date"] = ft::getDate();
+			client._res.headers["Server"] = "webserv";
+			client._status = Client::BODY;
+			break ;
+		case Client::BODY:
+			if (client._read_fd == -1)
+			{
+				client._res.headers["Content-Length"] = std::to_string(client._res.body.size());
+				createResponse(client);
+				client._status = Client::RESPONSE;
+			}
 			break ;
 	}
 }
