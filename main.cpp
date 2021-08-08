@@ -44,10 +44,8 @@ int main(int argc, char** argv)
 		readSet = rSet;
 		writeSet = wSet;
 
-		std::cout << "before" << FD_ISSET(3, &readSet) << std::endl;
 		select(config.getMaxFd(g_servers) + 1, &readSet, &writeSet, NULL, &timeout);
-		std::cout << "after " << FD_ISSET(3, &readSet) << std::endl;
-
+		
 		for (std::vector<Server>::iterator server(g_servers.begin()); server != g_servers.end(); server++)
 		{
 			if (!g_state)

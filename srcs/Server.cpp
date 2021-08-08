@@ -172,7 +172,9 @@ int				Server::readRequest(Client *client)
 	std::cout << "readRequest" << std::endl;
 
 	length = strlen(client->_buf);
-	readed = read(client->_fd, client->_buf, BUFFER_SIZE - length);
+	readed = read(client->_fd, client->_buf + length, BUFFER_SIZE - length);
+	length += readed;
+	std::cout << client->_buf << std::endl;
 	if (readed > 0)
 	{
 		client->_buf[length] = '\0';

@@ -1,6 +1,6 @@
 NAME = webserv
 CC = clang++
-FLAGS = -Wall -Wextra -Werror -I./includes
+FLAGS = -Wall -Wextra -Werror -I./includes -g
 
 SRCS = 	./srcs/Server.cpp \
 		./srcs/Config.cpp \
