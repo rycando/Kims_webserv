@@ -52,11 +52,15 @@ int main(int argc, char** argv)
 				break ;
 			try
 			{
+				if (FD_ISSET(server->getFd(), &readSet))
+				{
+					std::cout << server->getFd() << " fd is set" << std::endl;
+				}
 				server->connect(getOpenFd(g_servers), &readSet);
 			}
 			catch(const std::exception& e)
 			{
-				std::cerr << e.what() << '\n';
+				std::cerr << e.what() << std::endl;
 			}
 
 			if (!server->_tmp_clients.empty())

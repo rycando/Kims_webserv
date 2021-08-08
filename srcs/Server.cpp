@@ -1,13 +1,32 @@
 #include "../includes/Server.hpp"
 
-Server::Server()
+Server::Server() :  _fd(-1), _maxFd(-1), _port(-1)
 {
-
+	memset(&_s_addr, 0, sizeof(_s_addr));
 }
 
 Server::~Server()
 {
+	Client		*client = NULL;
 
+	if (_fd != -1)
+	{
+		for (std::vector<Client*>::iterator it(_clients.begin()); it != _clients.end(); ++it)
+		{
+			client = *it;
+			*it = NULL;
+			if (client)
+				delete client;
+		}
+		while (!_tmp_clients.empty())
+		{
+			close(_tmp_clients.front());
+			_tmp_clients.pop();
+		}
+		_clients.clear();
+		close(_fd);
+		FD_CLR(_fd, _rSet);
+	}
 }
 
 int		Server::getFd() const
@@ -61,7 +80,6 @@ void Server::init(fd_set *readSet, fd_set *writeSet, fd_set *rSet, fd_set *wSet)
 	_s_addr.sin_port = htons(_port); 		// htonl : long형 호스트 바이트 순서를 네트워크 바이트 순서로 변환
 	_s_addr.sin_family = AF_INET;			// AF_INET : IPv4 인터넷 프로토콜에 적용하는 주소체계
 	
-	
 	//3. 소켓을 포트에 연결
 	if (bind(_fd, (struct sockaddr *)&_s_addr, sizeof(_s_addr)) == -1) 
 		throw (ServerException("bind()", std::string(strerror(errno))));
@@ -69,6 +87,7 @@ void Server::init(fd_set *readSet, fd_set *writeSet, fd_set *rSet, fd_set *wSet)
 	//4. 커널에 개통 요청
 	if (listen(_fd, 5) == -1)
 		throw (ServerException("listen()", std::string(strerror(errno))));
+
 	// _fd를 non-blocking 모드로 바꿈
 	if (fcntl(_fd, F_SETFL, O_NONBLOCK) == -1)
 		throw (ServerException("fcntl()", std::string(strerror(errno))));
@@ -85,23 +104,11 @@ void Server::connect(int openFd, fd_set *Set)
 
 	if ((ret = FD_ISSET(_fd, Set)))
 	{
-		std::cout << "pass FD_ISSET" << std::endl;
-
 		if (openFd > MAX_FD)
-		{
-			std::cout << "before holdConnection" << std::endl;
 			holdConnection();
-			std::cout << "after holdConnection" << std::endl;
-		}
 		else
-		{
-			std::cout << "before acceptConnection" << std::endl;
 			acceptConnection();
-			std::cout << "connect" << std::endl;
-		}
 	}
-	// else
-	// 	std::cout << ret << std::endl;
 }
 
 void	Server::holdConnection()
