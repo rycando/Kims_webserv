@@ -49,18 +49,29 @@ bool			Handler::parseHeaders(std::string &buf, Request &req)
 
 bool			Handler::checkSyntax(const Request &req)
 {
-	if (req.method.size() == 0 || req.uri.size() == 0
-		|| req.version.size() == 0)
+	std::cout << "1" << std::endl;
+	std::cout << "method " << req.method.size() << std::endl;
+	std::cout << "uri " << req.uri.size() << std::endl;
+	std::cout << "version " << req.version.size() << std::endl;
+	if (req.method.size() == 0 || req.uri.size() == 0 || req.version.size() == 0)
 		return (false);
+			std::cout << "2" << std::endl;
+
 	if (req.method != "GET" && req.method != "POST"
 		&& req.method != "HEAD" && req.method != "PUT"
 		&& req.method != "CONNECT" && req.method != "TRACE"
 		&& req.method != "OPTIONS" && req.method != "DELETE")
 		return (false);
+			std::cout << "3" << std::endl;
+
 	if (req.method != "OPTIONS" && req.uri[0] != '/') //OPTIONS can have * as uri
 		return (false);
+			std::cout << "4" << std::endl;
+
 	if (req.version != "HTTP/1.1\r" && req.version != "HTTP/1.1")
 		return (false);
+			std::cout << "5" << std::endl;
+
 	if (req.headers.find("Host") == req.headers.end())
 		return (false);
 	return (true);
@@ -152,6 +163,7 @@ void Handler::parseRequest(Client &client, std::vector<config> &config)
 		client._status = Client::CODE;
 	}
 	client._req = request;
+	std::cout << client._buf << std::endl;
 	tmp = client._buf;
 	tmp = tmp.substr(tmp.find("\r\n\r\n") + 4);
 	strcpy(client._buf, tmp.c_str());

@@ -11,6 +11,8 @@ void	Handler::dispatcher(Client &client)
 
 	std::cout << "dispatcher\n";
 
+	std::cout << &client << std::endl;
+	std::cout << client._req.method << std::endl;
 	(this->*map[client._req.method])(client);
 }
 
