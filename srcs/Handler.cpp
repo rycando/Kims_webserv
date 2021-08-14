@@ -64,14 +64,6 @@ bool			Handler::checkSyntax(const Request &req)
 	return (true);
 }
 
-void show_elm(std::map<std::string, std::string> &map)
-{
-    for (std::map<std::string, std::string>::iterator it = map.begin(); it != map.end() ; it++)
-    {
-        std::cout << it->first << "\t" << it->second << std::endl;
-    }
-}
-
 void			Handler::getConf(Client &client, Request &req, std::vector<config> &conf)
 {
 	typedef struct std::map<std::string, std::string> elm;
@@ -100,14 +92,6 @@ void			Handler::getConf(Client &client, Request &req, std::vector<config> &conf)
 	}
 	if (it == conf.end())
 		to_parse = conf[0];
-	std::map<std::string, std::map<std::string, std::string> >::iterator it3(to_parse.begin());
-	while (it3 != to_parse.end())
-	{
-		std::cout << "------------------" << std::endl;
-		std::cout << "-" << it3->first << "-" << std::endl;
-		std::cout << "------------------" << std::endl;
-		it3++;
-	}
 	std::cout << "to_parse_test : " << to_parse["server| location /|"]["methods"] << std::endl;
 	tmp = req.uri;
 	std::cout << "tmp : " << tmp << std::endl;
