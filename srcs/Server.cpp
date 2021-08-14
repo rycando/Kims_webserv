@@ -209,8 +209,8 @@ int					Server::writeResponse(Client *client)
 	switch (client->_status)
 	{
 		case Client::RESPONSE:
-			ft::getline(client->_response, log, '\n');
-			ft::logger(std::string("RESPONSE:\n") + log, 1);
+			// ft::getline(client->_response, log, '\n');
+			ft::logger(std::string("RESPONSE:\n") + std::string("-----------\n") + client->_response +std::string("------------\n"), 1);
 			length = write(client->_fd, client->_response.c_str(), client->_response.size());
 			if (length < client->_response.size())
 				client->_response = client->_response.substr(length);

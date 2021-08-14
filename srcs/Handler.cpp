@@ -84,6 +84,7 @@ void			Handler::getConf(Client &client, Request &req, std::vector<config> &conf)
 	struct stat		info;
 	config			to_parse;
 
+	std::cout << "getConf" << std::endl;
 	if (!req.valid)
 	{
 		client._conf["error"] = conf[0]["server|"]["error"];
@@ -92,8 +93,10 @@ void			Handler::getConf(Client &client, Request &req, std::vector<config> &conf)
 	std::vector<config>::iterator it(conf.begin());
 	while (it != conf.end())
 	{
+		std::cout << req.headers["Host"] << std::endl;
 		if (req.headers["Host"] == (*it)["server|"]["server_name"])
 		{
+			std::cout << "to_parse found!!" << std::endl;
 			to_parse = *it;
 			break ;
 		}
@@ -101,21 +104,33 @@ void			Handler::getConf(Client &client, Request &req, std::vector<config> &conf)
 	}
 	if (it == conf.end())
 		to_parse = conf[0];
+	std::map<std::string, std::map<std::string, std::string> >::iterator it3(to_parse.begin());
+	while (it3 != to_parse.end())
+	{
+		std::cout << "------------------" << std::endl;
+		std::cout << "-" << it3->first << "-" << std::endl;
+		std::cout << "------------------" << std::endl;
+		it3++;
+	}
+	std::cout << "to_parse_test : " << to_parse["server| location /|"]["methods"] << std::endl;
 	tmp = req.uri;
+	std::cout << "tmp : " << tmp << std::endl;
 	do
 	{
-		if (to_parse.find("server|location " + tmp + "|") != to_parse.end())
+		if (to_parse.find("server| location " + tmp + "|") != to_parse.end())
 		{
-			elmt = to_parse["server|location " + tmp + "|"];
+			std::cout << "config found" << std::endl;
+			elmt = to_parse["server| location " + tmp + "|"];
 			break ;
 		}
 		tmp = tmp.substr(0, tmp.find_last_of('/'));
 	} while (tmp != "");
 	if (elmt.size() == 0)
-		if (to_parse.find("server|location /|") != to_parse.end())
-			elmt = to_parse["server|location /|"];
+		if (to_parse.find("server| location /|") != to_parse.end())
+			elmt = to_parse["server| location /|"];
 	if (elmt.size() > 0)
 	{
+		std::cout << "elmt size : " << elmt.size() << std::endl;
 		client._conf = elmt;
 		client._conf["path"] = req.uri.substr(0, req.uri.find("?"));
 		if (elmt.find("root") != elmt.end())

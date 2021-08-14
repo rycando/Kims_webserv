@@ -13,17 +13,22 @@ int			Helper::getStatusCode(Client &client)
 
 	client._res.version = "HTTP/1.1";
 	client._res.status_code = OK;
-	if (client._conf["methods"].find(client._req.method) == std::string::npos)
-		client._res.status_code = NOTALLOWED;
-	else if (client._conf.find("auth") != client._conf.end())
-	{
-		client._res.status_code = UNAUTHORIZED;
-		if (client._req.headers.find("Authorization") != client._req.headers.end())
-		{
-			credential = decode64(client._req.headers["Authorization"].c_str());
-			if (credential == client._conf["auth"])
-				client._res.status_code = OK;
-		}
+    std::cout << "methods " << client._conf["methods"] << std::endl;
+    if (client._conf["methods"].find(client._req.method) == std::string::npos)
+        client._res.status_code = NOTALLOWED;
+    else if (client._conf.find("auth") != client._conf.end())
+    {
+        client._res.status_code = UNAUTHORIZED;
+        std::cout << "--------------------------------------" << std::endl;
+        if (client._req.headers.find("Authorization") != client._req.headers.end())
+        {
+            credential = decode64(client._req.headers["Authorization"].c_str());
+            std::cout << "--------------------------------------" << std::endl;
+            std::cout << credential << std::endl;
+            std::cout << "--------------------------------------" << std::endl;
+            if (credential == client._conf["auth"])
+                client._res.status_code = OK;
+        }
 	}
 
 	ret = (this->*map[client._req.method])(client);

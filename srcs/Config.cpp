@@ -74,11 +74,9 @@ void Config::parse_conf(std::string &buf, std::string line, std::string &context
     std::pair<std::string, std::string> value;
 
         while (line.empty())
-        {
             getline(buf, line);
-            while(std::isspace(line[0]))
-                line.erase(line.begin());
-        }
+        while(std::isspace(line[0]))
+            line.erase(0, 1);
         if ((pos = line.find('{')) == std::string::npos)
         {
             std::cout << line << std::endl;
@@ -89,7 +87,7 @@ void Config::parse_conf(std::string &buf, std::string line, std::string &context
             tmp.erase(tmp.end() - 1);
         if (context.empty() && tmp.compare(0, 6, "server"))
             throw Config::InvalidConfigFileException(4);
-        context += tmp + "|";
+        context += (" " + tmp + "|");
         getline(buf, line);
         while ((pos = line.find('}')) == std::string::npos)
         {
