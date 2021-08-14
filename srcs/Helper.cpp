@@ -184,6 +184,12 @@ void			Helper::fillBody(Client &client)
 	if (tmp.size() > client._chunk.len)
 	{
 		client._req.body += tmp.substr(0, client._chunk.len);
+
+		std::cout << "===================================\n";
+		std::cout << client._req.body << std::endl;
+		std::cout << "===================================\n";
+
+
 		tmp = tmp.substr(client._chunk.len + 1);
 		memset(client._buf, 0, BUFFER_SIZE + 1);
 		strcpy(client._buf, tmp.c_str());
@@ -193,6 +199,11 @@ void			Helper::fillBody(Client &client)
 	else
 	{
 		client._req.body += tmp;
+
+		std::cout << "===================================\n";
+		std::cout << client._req.body << std::endl;
+		std::cout << "===================================\n";
+		
 		client._chunk.len -= tmp.size();
         client._chunk.done = true;
 		memset(client._buf, 0, BUFFER_SIZE + 1);

@@ -1,9 +1,8 @@
 #include "./includes/Communicate.hpp"
-// #include "./includes/Server.hpp"
 #include "./includes/Config.hpp"
-// #include "./includes/Client.hpp"
 #include "./includes/Handler.hpp"
-// #include "./includes/Webserv.hpp"
+#include "./includes/Server.hpp"
+#include "./includes/utils.hpp"
 
 std::vector<Server>		g_servers;
 
@@ -19,12 +18,19 @@ int main(int argc, char** argv)
 	bool	g_state = true;
 	struct timeval timeout;
 	std::string tmp;
-	
+
 	if (argc != 2)
 		return (0);
 	try 
 	{
 		config.parse(argv[1], g_servers);
+		for (std::vector<Server>::iterator it = g_servers.begin(); it != g_servers.end(); it++)
+		{
+			for (unsigned long i = 0; i < it->_conf.size(); i++)
+			{
+				show_config(it->_conf.at(i));
+			}
+		}
 
 		initialize_fdsets(&rSet, &wSet, &readSet, &writeSet, &timeout);
 

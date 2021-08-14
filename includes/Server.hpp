@@ -29,7 +29,7 @@ class Server
 
 	public:
 	
-		std::vector<config>		_conf;		
+		std::vector<config>		_conf;
 
 
 		std::vector<Client*>	_clients;

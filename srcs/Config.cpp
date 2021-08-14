@@ -128,6 +128,9 @@ void Config::parse(char *file, std::vector<Server> &servers)
     while (!buf.empty())
     {
         parse_conf(buf, line, context, config);
+
+        show_config(config);
+        
         std::vector<Server>::iterator it(servers.begin());
         while (it != servers.end())
         {

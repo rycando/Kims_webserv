@@ -13,7 +13,7 @@ SRCS = 	./srcs/Server.cpp \
 		./srcs/Communicate.cpp \
 		main.cpp
 
-# OBJS = $(SRCS:%.cpp=%.o)
+OBJS = $(SRCS:%.cpp=%.o)
 
 .cpp.o : 
 	$(CC) $(FLAGS) $^ -o $@

@@ -1,13 +1,11 @@
 #include "../includes/Handler.hpp"
 
 Handler::Handler()
-{
-	
+{	
 }
 
 Handler::~Handler()
-{
-	
+{	
 }
 
 bool			Handler::parseHeaders(std::string &buf, Request &req)
@@ -49,37 +47,35 @@ bool			Handler::parseHeaders(std::string &buf, Request &req)
 
 bool			Handler::checkSyntax(const Request &req)
 {
-	std::cout << "1" << std::endl;
-	std::cout << "method " << req.method.size() << std::endl;
-	std::cout << "uri " << req.uri.size() << std::endl;
-	std::cout << "version " << req.version.size() << std::endl;
+	// std::cout << "method " << req.method.size() << std::endl;
+	// std::cout << "uri " << req.uri.size() << std::endl;
+	// std::cout << "version " << req.version.size() << std::endl;
 	if (req.method.size() == 0 || req.uri.size() == 0 || req.version.size() == 0)
 		return (false);
-			std::cout << "2" << std::endl;
 
-	if (req.method != "GET" && req.method != "POST"
-		&& req.method != "HEAD" && req.method != "PUT"
-		&& req.method != "CONNECT" && req.method != "TRACE"
-		&& req.method != "OPTIONS" && req.method != "DELETE")
+	if (req.method != "GET" && req.method != "POST" && req.method != "DELETE")
 		return (false);
-			std::cout << "3" << std::endl;
-
-	if (req.method != "OPTIONS" && req.uri[0] != '/') //OPTIONS can have * as uri
-		return (false);
-			std::cout << "4" << std::endl;
 
 	if (req.version != "HTTP/1.1\r" && req.version != "HTTP/1.1")
 		return (false);
-			std::cout << "5" << std::endl;
 
 	if (req.headers.find("Host") == req.headers.end())
 		return (false);
 	return (true);
 }
 
+void show_elm(std::map<std::string, std::string> &map)
+{
+    for (std::map<std::string, std::string>::iterator it = map.begin(); it != map.end() ; it++)
+    {
+        std::cout << it->first << "\t" << it->second << std::endl;
+    }
+}
+
 void			Handler::getConf(Client &client, Request &req, std::vector<config> &conf)
 {
-	std::map<std::string, std::string> elmt;
+	typedef struct std::map<std::string, std::string> elm;
+	elm				elmt;
 	std::string		tmp;
 	struct stat		info;
 	config			to_parse;
@@ -125,6 +121,8 @@ void			Handler::getConf(Client &client, Request &req, std::vector<config> &conf)
 		}
 		tmp = tmp.substr(0, tmp.find_last_of('/'));
 	} while (tmp != "");
+
+
 	if (elmt.size() == 0)
 		if (to_parse.find("server| location /|") != to_parse.end())
 			elmt = to_parse["server| location /|"];
@@ -147,6 +145,13 @@ void			Handler::getConf(Client &client, Request &req, std::vector<config> &conf)
 			client._conf["path"] += "/" + client._conf["index"];
 	if (req.method == "GET")
 		client._conf["savedpath"] = client._conf["path"];
+
+	std::cout << "===============client conf ==================\n";
+	for (std::map<std::string, std::string>::iterator it = client._conf.begin(); it != client._conf.end(); it++)
+	{
+		std::cout << it->first << " " << it->second << std::endl;
+	}
+	std::cout << "============================================\n";
 }
 
 void Handler::parseRequest(Client &client, std::vector<config> &config)
@@ -161,13 +166,13 @@ void Handler::parseRequest(Client &client, std::vector<config> &config)
     ft::getline(buffer, request.version, '\n');
     if (parseHeaders(buffer, request))
 		request.valid = checkSyntax(request);
-	if (request.uri != "*" || request.method != "OPTIONS")
+	if (request.uri != "*")
 		getConf(client, request, config);
 	if (request.valid)
 	{
 		if (client._conf["root"][0] != '\0')
 			chdir(client._conf["root"].c_str());
-		if (request.method == "POST" || request.method == "PUT")
+		if (request.method == "POST")
 			client._status = Client::BODYPARSING;
 		else
 			client._status = Client::CODE;
@@ -227,19 +232,21 @@ void			Handler::getBody(Client &client)
 
 void			Handler::dechunkBody(Client &client)
 {
-    // while (!client._chunk.done)
-    // {
-        if (strstr(client._buf, "\r\n") && client._chunk.found == false)
-        {
-            client._chunk.len = _helper.findLen(client);
-            if (client._chunk.len == 0)
-                client._chunk.done = true;
-            else
-                client._chunk.found = true;
-        }
-        else if (client._chunk.found == true)
-            _helper.fillBody(client);
-    // }
+	if (strstr(client._buf, "\r\n") && client._chunk.found == false)
+	{
+		client._chunk.len = _helper.findLen(client);
+		std::cout << "-----------------------------\n";
+		std::cout << client._chunk.len << std::endl;
+		std::cout << "-----------------------------\n";
+
+		if (client._chunk.len == 0)
+			client._chunk.done = true;
+		else
+			client._chunk.found = true;
+	}
+	else if (client._chunk.found == true)
+		_helper.fillBody(client);
+
 	if (client._chunk.done)
 	{
 		memset(client._buf, 0, BUFFER_SIZE + 1);

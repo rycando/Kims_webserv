@@ -39,3 +39,23 @@ int	communicate(fd_set *readSet, fd_set *writeSet, Server &server, Client *clien
 			client->readFile(); // 에러메세지도 들어옴 getErrorPage()
 	return (1);
 }
+
+void show_elmt(std::map<std::string, std::string> &map)
+{
+    for (std::map<std::string, std::string>::iterator it = map.begin(); it != map.end() ; it++)
+    {
+        std::cout << "$" <<it->first << "$\t$" << it->second << "$" << std::endl;
+    }
+}
+
+void show_config(std::map<std::string, elmt> &map)
+{
+    std::cout << "===============show_config=====================\n";
+    for (std::map<std::string, elmt>::iterator it = map.begin(); it != map.end() ; it++)
+    {
+        std::cout << "$" << it->first << "$\n";
+        show_elmt(it->second);
+		std::cout << "--------------------------------\n";
+    }
+    std::cout << "==============================================\n";
+}

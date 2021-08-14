@@ -61,9 +61,9 @@ void Server::init(fd_set *readSet, fd_set *writeSet, fd_set *rSet, fd_set *wSet)
 	if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)) == -1)
 		throw (ServerException("setsockopt() error", std::string(strerror(errno))));
 
-	//2. 연결 요청을 수신할 주소 설정 - _conf에서 host와 port를 가져오자.
 	memset(&_s_addr, 0, sizeof(_s_addr));
 
+	//2. 연결 요청을 수신할 주소 설정 - _conf에서 host와 port를 가져오자.
 	if ((const unsigned long)(c_idx = parse_address.find(":")) != std::string::npos)
 	{
 		host = parse_address.substr(0, c_idx);
@@ -101,7 +101,6 @@ void Server::connect(int openFd, fd_set *Set)
 	int					MAX_FD = 256 - 20;
 	int					ret;
 
-
 	if ((ret = FD_ISSET(_fd, Set)))
 	{
 		if (openFd > MAX_FD)
@@ -120,7 +119,7 @@ void	Server::holdConnection()
 	len = sizeof(struct sockaddr);
 	if ((fd = accept(_fd, (struct sockaddr *)&c_addr, &len)) == -1)
 		throw (ServerException("accept() error in holdConnection(): ", std::string(strerror(errno))));
-	std::cout << _clients.size() << std::endl;
+	// std::cout << _clients.size() << std::endl;
 
 	if (_tmp_clients.size() < 10)
 	{
@@ -148,7 +147,7 @@ void	Server::acceptConnection()
 		_maxFd = fd;
 	client = new Client(fd, _rSet, _wSet, c_addr);
 	_clients.push_back(client);
-	std::cout << _clients.size() << std::endl;
+	// std::cout << _clients.size() << std::endl;
 }
 
 int		Server::getOpenFd()
@@ -176,12 +175,12 @@ int				Server::readRequest(Client *client)
 	int			readed;
 	std::string log;
 
-	std::cout << "readRequest" << std::endl;
+	// std::cout << "readRequest" << std::endl;
 
 	length = strlen(client->_buf);
 	readed = read(client->_fd, client->_buf + length, BUFFER_SIZE - length);
 	length += readed;
-	std::cout << client->_buf << std::endl;
+	// std::cout << client->_buf << std::endl;
 	if (readed > 0)
 	{
 		client->_buf[length] = '\0';
