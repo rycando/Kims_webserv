@@ -87,7 +87,10 @@ void Config::parse_conf(std::string &buf, std::string line, std::string &context
             tmp.erase(tmp.end() - 1);
         if (context.empty() && tmp.compare(0, 6, "server"))
             throw Config::InvalidConfigFileException(4);
-        context += (" " + tmp + "|");
+        if (context != "")
+            context += " ";
+        context += tmp + "|";
+        std::cout << context << std::endl;
         getline(buf, line);
         while ((pos = line.find('}')) == std::string::npos)
         {
@@ -131,6 +134,8 @@ void Config::parse(char *file, std::vector<Server> &servers)
         std::vector<Server>::iterator it(servers.begin());
         while (it != servers.end())
         {
+            std::cout << config["server|"]["listen"] << std::endl;
+            std::cout << it->_conf.back()["server|"]["listen"] << std::endl;
             if (config["server|"]["listen"] == it->_conf.back()["server|"]["listen"])
             {
                 std::cout << config["server|"]["listen"] << " " << it->_conf.back()["server|"]["listen"] << std::endl;
