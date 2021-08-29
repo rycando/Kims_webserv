@@ -1,10 +1,232 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Webserv</title>
+		<title>Kim's Webserv</title>
 		<meta charset="utf-8" />
 	</head>
 	<body>
-		<h2>This is Kim's Webserv ^^ </h2>
+		<script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+		<script src="index.js"></script>
+		<link rel="stylesheet" type="text/css" href="style.css" />
+		<!-- CSS only -->
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We"
+			crossorigin="anonymous"
+		/>
+		<!-- JavaScript Bundle with Popper -->
+		<script
+			src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+			integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+			crossorigin="anonymous"
+		></script>
+		<nav
+			class="navbar navbar-default"
+			style="
+				margin-top: 1rem;
+				padding-bottom: 1rem;
+				background-color: white;
+				border-bottom: 1px solid #eeeeee;
+				position: fixed;
+				top: 0;
+				width: 100vw;
+			"
+		>
+			<div class="container">
+				<div class="d-flex align-items-center">
+					<div
+						style="
+							width: 60px;
+							height: 60px;
+							border-radius: 0.5rem;
+							background-color: black;
+						"
+						class="d-flex align-items-center justify-content-center"
+					>
+						<img
+							src="https://elearning.intra.42.fr/assets/42_logo-7dfc9110a5319a308863b96bda33cea995046d1731cebb735e41b16255106c12.svg"
+							style="max-width: 80%; max-height: 80%"
+						/>
+					</div>
+					<span
+						style="
+							margin-left: 1rem;
+							font-weight: 500;
+							font-size: 18px;
+						"
+						>KIM's WEBSERV</span
+					>
+				</div>
+
+				<ul class="nav">
+					<li
+						role="presentation"
+						style="padding: 0 2rem; border-right: 1px solid #eeeeee"
+					>
+						팀 소개
+					</li>
+					<li
+						role="presentation"
+						style="padding: 0 2rem; border-right: 1px solid #eeeeee"
+					>
+						웹 서브 기본원리
+					</li>
+					<li role="presentation" style="padding: 0 2rem">
+						어쩌구 저쩌구
+					</li>
+				</ul>
+			</div>
+		</nav>
+		<div style="margin-top: 100px;">
+			<div
+				style="background-color: whitesmoke; height: 40vh"
+				class="d-flex align-items-center justify-content-center"
+			>
+				<div class="container">
+					<img
+						src=""
+						alt="이미지 하나 들어갔으면 좋겠다 크게~ 좌우 블러 주고 컨테이너에 맞추기!"
+					/>
+				</div>
+			</div>
+			<div class="container">
+				<section>
+					<div>
+						<div
+							style="
+								margin: 1rem;
+								font-size: 24px;
+								font-weight: bold;
+							"
+						>
+							<span
+								style="
+									border-bottom: 1px solid #eeeeee;
+									padding: 0.5rem;
+								"
+							>
+								팀 소개
+							</span>
+						</div>
+						<div style="margin: 2rem 3rem" class="d-flex flex-row">
+							<div
+								style="
+									width: 200px;
+									height: 200px;
+									background-color: whitesmoke;
+									border-radius: 50%;
+								"
+								class="
+									d-flex
+									align-items-center
+									justify-content-center
+								"
+							>
+								<img src="" alt="이낌 사진!" />
+							</div>
+							<div style="padding: 1rem 5rem">
+								<div>
+									<span
+										style="
+											font-weight: 500;
+											font-size: 20px;
+											color: #999999;
+											border-right: 1px solid #cccccc;
+											padding: 0 0.5rem;
+										"
+										>팀장</span
+									>
+									<span
+										style="
+											font-weight: bold;
+											font-size: 24px;
+											padding: 1rem;
+										"
+										>Ekim</span
+									>
+								</div>
+								<div>
+									<span
+										style="
+											font-weight: 500;
+											font-size: 13px;
+											color: #999999;
+											padding: 0 0.5rem;
+										"
+										>담당 파트1 / 담당 파트2 / 담당
+										파트3</span
+									>
+								</div>
+								<div style="padding: 1rem 0.5rem">
+									<span>
+										자기 소개 써주세요~ 어쩌다 개발하게
+										됐구, 어떤 분야에 관심있구, 개성
+										넘치게~~</span
+									>
+								</div>
+							</div>
+						</div>
+						<div style="margin: 2rem 3rem" class="d-flex flex-row justify-content-end">
+							<div style="padding: 1rem 5rem" class="d-flex flex-column align-items-end">
+								<div>
+									<span
+										style="
+											font-weight: 500;
+											font-size: 20px;
+											color: #999999;
+											border-right: 1px solid #cccccc;
+											padding: 0 0.5rem;
+										"
+										>팀원</span
+									>
+									<span
+										style="
+											font-weight: bold;
+											font-size: 24px;
+											padding: 1rem;
+										"
+										>Ryukim</span
+									>
+								</div>
+								<div>
+									<span
+										style="
+											font-weight: 500;
+											font-size: 13px;
+											color: #999999;
+											padding: 0 0.5rem;
+										"
+										>담당 파트1 / 담당 파트2 / 담당
+										파트3</span
+									>
+								</div>
+								<div style="padding: 1rem 0.5rem">
+									<span>
+										자기 소개 써주세요~ 어쩌다 개발하게
+										됐구, 어떤 분야에 관심있구, 개성
+										넘치게~~</span
+									>
+								</div>
+							</div>
+							<div
+								style="
+									width: 200px;
+									height: 200px;
+									background-color: whitesmoke;
+									border-radius: 50%;
+								"
+								class="
+									d-flex
+									align-items-center
+									justify-content-center
+								"
+							>
+								<img src="" alt="류낌 사진!" />
+							</div>
+						</div>
+				</section>
+			</div>
+		</div>
 	</body>
 </html>
