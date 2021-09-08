@@ -24,13 +24,13 @@ int main(int argc, char** argv)
 	try 
 	{
 		config.parse(argv[1], g_servers);
-		for (std::vector<Server>::iterator it = g_servers.begin(); it != g_servers.end(); it++)
-		{
-			for (unsigned long i = 0; i < it->_conf.size(); i++)
-			{
-				show_config(it->_conf.at(i));
-			}
-		}
+		// for (std::vector<Server>::iterator it = g_servers.begin(); it != g_servers.end(); it++)
+		// {
+		// 	for (unsigned long i = 0; i < it->_conf.size(); i++)
+		// 	{
+		// 		show_config(it->_conf.at(i));
+		// 	}
+		// }
 
 		initialize_fdsets(&rSet, &wSet, &readSet, &writeSet, &timeout);
 
@@ -47,28 +47,36 @@ int main(int argc, char** argv)
 	
 	while (g_state)
 	{
-		readSet = rSet;
-		writeSet = wSet;
+		FD_COPY(&rSet, &readSet);
+		FD_COPY(&wSet, &writeSet);
 
-		select(config.getMaxFd(g_servers) + 1, &readSet, &writeSet, NULL, &timeout);
-		
+		int ret;
+		ret = select(config.getMaxFd(g_servers) + 1, &readSet, &writeSet, NULL, &timeout);
+		// std::cout << "ret : " << ret << std::endl;
+
+		// int i = 3;
+		// while (i < 10)
+		// {
+		// 	if (FD_ISSET(i, &readSet))
+		// 	{
+		// 		std::cout << i << " ";
+		// 	}
+		// 	i++;
+		// }
+		// std::cout << std::endl;
+
 		for (std::vector<Server>::iterator server(g_servers.begin()); server != g_servers.end(); server++)
 		{
 			if (!g_state)
 				break ;
 			try
 			{
-				if (FD_ISSET(server->getFd(), &readSet))
-				{
-					std::cout << server->getFd() << " fd is set" << std::endl;
-				}
 				server->connect(getOpenFd(g_servers), &readSet);
 			}
 			catch(const std::exception& e)
 			{
 				std::cerr << e.what() << std::endl;
 			}
-
 			if (!server->_tmp_clients.empty())
 				handler.send503(server->getWSet(), server->_tmp_clients);
 

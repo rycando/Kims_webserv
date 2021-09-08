@@ -85,7 +85,7 @@ void	Handler::getInHeaders(Client &client, struct stat *file_info)
 {
 	lstat(client._conf["path"].c_str(), file_info);
 	if (!S_ISDIR((*file_info).st_mode))
-		client._res.headers["Last-Modified"] = _helper.getLastModified(client._conf["path"]);
+		client._res.headers[""] = _helper.getLastModified(client._conf["path"]);
 	if (client._res.headers["Content-Type"][0] == '\0')
 		client._res.headers["Content-Type"] = _helper.findType(client);
 	if (client._res.status_code == UNAUTHORIZED)
