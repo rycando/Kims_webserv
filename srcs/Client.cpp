@@ -87,27 +87,27 @@ void	Client::setWriteState(bool status)
 
 void	Client::readFile()
 {
-	int ret;
-	int	status;
+	int ret = 0;
+	int	status = 0;
 	char buffer[BUFFER_SIZE + 1];
-	
+
 	if (_cgi_pid != -1)
 	{
 		if (!waitpid((pid_t)_cgi_pid, &status, WNOHANG))
 			return ;
-	}
-	else 
-	{
-		if (WEXITSTATUS(status) == 1)
+		else 
 		{
-			close(_tmp_fd);
-			_tmp_fd = -1;
-			_cgi_pid = -1;
-			close(_read_fd);
-			setFileToRead(false);
-			_read_fd = -1;
-			_res.body = "Error with cgi\n";
-			return;
+			if (WEXITSTATUS(status) == 1)
+			{
+				close(_tmp_fd);
+				_tmp_fd = -1;
+				_cgi_pid = -1;
+				close(_read_fd);
+				setFileToRead(false);
+				_read_fd = -1;
+				_res.body = "Error with cgi\n";
+				return;
+			}
 		}
 	}
 	
