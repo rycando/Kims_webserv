@@ -1,7 +1,0 @@
-s
-line : server {
-line : 	location / {
-line : 	location /directory {
-line : 	location /test {
-line : 	location /post_body {
-line : 	location /auth {

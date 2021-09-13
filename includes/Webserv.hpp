@@ -4,6 +4,7 @@
 #include <sys/time.h>
 #include <queue>
 #include <vector>
+#include <string>
 #include <cstdlib>
 #include <string.h>
 #include <sys/socket.h>
