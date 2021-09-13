@@ -34,7 +34,7 @@ bool			Handler::parseHeaders(std::string &buf, Request &req)
 				return (false);
 			}
             req.headers[key] = value;
- 			req.headers[key].pop_back(); //remove '\r'
+ 			req.headers[key].pop_back();
 		}
 		else
 		{
@@ -47,9 +47,6 @@ bool			Handler::parseHeaders(std::string &buf, Request &req)
 
 bool			Handler::checkSyntax(const Request &req)
 {
-	// std::cout << "method " << req.method.size() << std::endl;
-	// std::cout << "uri " << req.uri.size() << std::endl;
-	// std::cout << "version " << req.version.size() << std::endl;
 	if (req.method.size() == 0 || req.uri.size() == 0 || req.version.size() == 0)
 		return (false);
 
@@ -80,7 +77,6 @@ void			Handler::getConf(Client &client, Request &req, std::vector<config> &conf)
 	std::vector<config>::iterator it(conf.begin());
 	while (it != conf.end())
 	{
-		// std::cout << req.headers["Host"] << std::endl;
 		if (req.headers["Host"] == (*it)["server|"]["server_name"])
 		{
 			to_parse = *it;
@@ -95,7 +91,6 @@ void			Handler::getConf(Client &client, Request &req, std::vector<config> &conf)
 	{
 		if (to_parse.find("server| location " + tmp + "|") != to_parse.end())
 		{
-			// std::cout << "config found" << std::endl;
 			elmt = to_parse["server| location " + tmp + "|"];
 			break ;
 		}
@@ -108,7 +103,6 @@ void			Handler::getConf(Client &client, Request &req, std::vector<config> &conf)
 			elmt = to_parse["server| location /|"];
 	if (elmt.size() > 0)
 	{
-		// std::cout << "elmt size : " << elmt.size() << std::endl;
 		client._conf = elmt;
 		client._conf["path"] = req.uri.substr(0, req.uri.find("?"));
 		if (elmt.find("root") != elmt.end())
@@ -125,13 +119,6 @@ void			Handler::getConf(Client &client, Request &req, std::vector<config> &conf)
 			client._conf["path"] += "/" + client._conf["index"];
 	if (req.method == "GET")
 		client._conf["savedpath"] = client._conf["path"];
-
-	// std::cout << "===============client conf ==================\n";
-	// for (std::map<std::string, std::string>::iterator it = client._conf.begin(); it != client._conf.end(); it++)
-	// {
-	// 	std::cout << it->first << " " << it->second << std::endl;
-	// }
-	// std::cout << "============================================\n";
 }
 
 void Handler::parseRequest(Client &client, std::vector<config> &config)
@@ -163,7 +150,6 @@ void Handler::parseRequest(Client &client, std::vector<config> &config)
 		client._status = Client::CODE;
 	}
 	client._req = request;
-	// std::cout << client._buf << std::endl;
 	tmp = client._buf;
 	tmp = tmp.substr(tmp.find("\r\n\r\n") + 4);
 	strcpy(client._buf, tmp.c_str());
@@ -215,10 +201,6 @@ void			Handler::dechunkBody(Client &client)
 	if (strstr(client._buf, "\r\n") && client._chunk.found == false)
 	{
 		client._chunk.len = _helper.findLen(client);
-		// std::cout << "-----------------------------\n";
-		// std::cout << client._chunk.len << std::endl;
-		// std::cout << "-----------------------------\n";
-
 		if (client._chunk.len == 0)
 			client._chunk.done = true;
 		else
@@ -226,7 +208,6 @@ void			Handler::dechunkBody(Client &client)
 	}
 	else if (client._chunk.found == true)
 		_helper.fillBody(client);
-
 	if (client._chunk.done)
 	{
 		memset(client._buf, 0, BUFFER_SIZE + 1);

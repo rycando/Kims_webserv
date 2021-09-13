@@ -9,11 +9,6 @@ void	Handler::dispatcher(Client &client)
 	map["POST"] = &Handler::handlePost;
 	map["DELETE"] = &Handler::handleDelete;
 	map["BAD"] = &Handler::handleBadRequest;
-
-	// std::cout << "dispatcher\n";
-
-	// std::cout << &client << std::endl;
-	// std::cout << client._req.method << std::endl;
 	(this->*map[client._req.method])(client);
 }
 

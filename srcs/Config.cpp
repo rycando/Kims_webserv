@@ -78,10 +78,7 @@ void Config::parse_conf(std::string &buf, std::string line, std::string &context
         while(std::isspace(line[0]))
             line.erase(0, 1);
         if ((pos = line.find('{')) == std::string::npos)
-        {
-            std::cout << line << std::endl;
             throw Config::InvalidConfigFileException(3);
-        }
         tmp = std::string(line, 0, pos);
         while (std::isspace(tmp[tmp.size() - 1]))
             tmp.erase(tmp.end() - 1);
@@ -105,10 +102,7 @@ void Config::parse_conf(std::string &buf, std::string line, std::string &context
         while(std::isspace(line[0]))
             line.erase(line.begin());
         if (line[0] != '}')
-        {
-            std::cout << line << std::endl;
             throw Config::InvalidConfigFileException(5);
-        }
         while (std::isspace(line[1]))
             line.erase(line.begin() + 1);
         if (line[1])
