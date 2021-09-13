@@ -65,18 +65,32 @@
 				<ul class="nav">
 					<li
 						role="presentation"
-						style="padding: 0 2rem; border-right: 1px solid #eeeeee"
+						style="
+							padding: 0 2rem;
+							border-right: 1px solid #eeeeee;
+							cursor: pointer;
+						"
+						id="team"
 					>
 						팀 소개
 					</li>
 					<li
 						role="presentation"
-						style="padding: 0 2rem; border-right: 1px solid #eeeeee"
+						style="
+							padding: 0 2rem;
+							border-right: 1px solid #eeeeee;
+							cursor: pointer;
+						"
+						id="document"
 					>
 						웹 서브 기본원리
 					</li>
-					<li role="presentation" style="padding: 0 2rem">
-						어쩌구 저쩌구
+					<li
+						role="presentation"
+						style="padding: 0 2rem; cursor: pointer"
+						id="errors"
+					>
+						시행착오
 					</li>
 				</ul>
 			</div>
@@ -93,7 +107,11 @@
 					/>
 				</div>
 			</div>
-			<section style="border-bottom: 0.5px solid #eeeeee">
+			<section
+				style="border-bottom: 0.5px solid #eeeeee; height: 100vh"
+				class="d-flex align-items-center"
+				id="sec_team"
+			>
 				<div class="container">
 					<div
 						style="margin: 1rem; font-size: 24px; font-weight: bold"
@@ -161,7 +179,7 @@
 										color: #999999;
 										padding: 0 0.5rem;
 									"
-									>담당 파트1 / 담당 파트2 / 담당 파트3</span
+									>메인 루프 / 통신 파트 / 로거</span
 								>
 							</div>
 							<div style="padding: 1rem 0.5rem">
@@ -169,6 +187,48 @@
 									자기 소개 써주세요~ 어쩌다 개발하게 됐구,
 									어떤 분야에 관심있구, 개성 넘치게~~</span
 								>
+							</div>
+							<div class="d-flex">
+								<div
+									style="margin: 0 1rem; cursor: pointer"
+									onclick="location.href='https://silverzoo-igutjgut.tistory.com/'"
+								>
+									<img
+										alt="tistory"
+										src="https://t1.daumcdn.net/tistory_admin/static/top/favicon.ico"
+										style="width: 28px"
+									/>
+									<span style="font-weight: 500"
+										>Tistory</span
+									>
+								</div>
+								<div
+									class="d-flex"
+									style="cursor: pointer"
+									onclick="location.href='http://github.com/eunju-silver'"
+								>
+									<div
+										style="
+											background-color: black;
+											width: 28px;
+											height: 28px;
+											border-radius: 5px;
+											margin-right: 4px;
+										"
+										class="
+											d-flex
+											align-items-center
+											justify-content-center
+										"
+									>
+										<img
+											alt="github"
+											src="https://github.githubassets.com/favicons/favicon-dark.png"
+											style="width: 24px; height: 24px"
+										/>
+									</div>
+									<span style="font-weight: 500">github</span>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -208,7 +268,8 @@
 										color: #999999;
 										padding: 0 0.5rem;
 									"
-									>담당 파트1 / 담당 파트2 / 담당 파트3</span
+									>파싱 / 리퀘스트-리스폰스 처리 / 인덱스
+									제작</span
 								>
 							</div>
 							<div style="padding: 1rem 0.5rem">
@@ -216,6 +277,49 @@
 									자기 소개 써주세요~ 어쩌다 개발하게 됐구,
 									어떤 분야에 관심있구, 개성 넘치게~~</span
 								>
+							</div>
+							<div class="d-flex">
+								<div
+									style="margin: 0 1rem; cursor: pointer"
+									onclick="location.href='https://velog.io/@rycando'"
+								>
+									<img
+										alt="velog"
+										src="https://static.velog.io/favicons/favicon-96x96.png"
+										style="width: 28px"
+									/>
+									<span
+										style="color: #2fc898; font-weight: 500"
+										>velog</span
+									>
+								</div>
+								<div
+									class="d-flex"
+									style="cursor: pointer"
+									onclick="location.href='https://github.com/rycando'"
+								>
+									<div
+										style="
+											background-color: black;
+											width: 28px;
+											height: 28px;
+											border-radius: 5px;
+											margin-right: 4px;
+										"
+										class="
+											d-flex
+											align-items-center
+											justify-content-center
+										"
+									>
+										<img
+											alt="github"
+											src="https://github.githubassets.com/favicons/favicon-dark.png"
+											style="width: 24px; height: 24px"
+										/>
+									</div>
+									<span style="font-weight: 500">github</span>
+								</div>
 							</div>
 						</div>
 						<div
@@ -245,7 +349,11 @@
 					</div>
 				</div>
 			</section>
-			<section style="border-bottom: 0.5px solid #eeeeee">
+			<section
+				style="border-bottom: 0.5px solid #eeeeee; height: 100vh"
+				class="d-flex align-items-center"
+				id="sec_document"
+			>
 				<div class="container">
 					<div
 						style="margin: 1rem; font-size: 24px; font-weight: bold"
@@ -258,6 +366,158 @@
 						>
 							웹 서브 기본 원리
 						</span>
+					</div>
+				</div>
+			</section>
+			<section
+				style="border-bottom: 0.5px solid #eeeeee; height: 100vh"
+				class="d-flex align-items-center"
+				id="sec_errors"
+			>
+				<div class="container">
+					<div
+						style="margin: 1rem; font-size: 24px; font-weight: bold"
+					>
+						<span
+							style="
+								border-bottom: 1px solid #eeeeee;
+								padding: 0.5rem;
+							"
+						>
+							시행착오
+						</span>
+					</div>
+
+					<div style="margin: 2rem 1rem" class="d-flex flex-row">
+						<div style="padding: 1rem 5rem">
+							<div>
+								<span
+									style="
+										font-weight: 500;
+										font-size: 20px;
+										color: #999999;
+										border-right: 1px solid #cccccc;
+										padding: 0 0.5rem;
+									"
+									>Case 1</span
+								>
+								<span
+									style="
+										font-weight: bold;
+										font-size: 24px;
+										padding: 1rem;
+									"
+									>Server의 파싱 정보가 비어있다?!</span
+								>
+							</div>
+							<div>
+								<span
+									style="
+										font-weight: 500;
+										font-size: 13px;
+										color: #999999;
+										padding: 0 0.5rem;
+									"
+									>눈에 보이지 않는 tab 문자 처리하기</span
+								>
+							</div>
+							<div style="padding: 1rem 0.5rem">
+								<span>
+									자기 소개 써주세요~ 어쩌다 개발하게 됐구,
+									어떤 분야에 관심있구, 개성 넘치게~~</span
+								>
+							</div>
+						</div>
+					</div>
+
+					<div
+						style="margin: 2rem 1rem"
+						class="d-flex flex-row justify-content-end"
+					>
+						<div
+							style="padding: 1rem 5rem"
+							class="d-flex flex-column align-items-end"
+						>
+							<div>
+								<span
+									style="
+										font-weight: 500;
+										font-size: 20px;
+										color: #999999;
+										border-right: 1px solid #cccccc;
+										padding: 0 0.5rem;
+									"
+									>Case 2</span
+								>
+								<span
+									style="
+										font-weight: bold;
+										font-size: 24px;
+										padding: 1rem;
+									"
+									>readset이 제대로 할당되어있지 않다?!</span
+								>
+							</div>
+							<div>
+								<span
+									style="
+										font-weight: 500;
+										font-size: 13px;
+										color: #999999;
+										padding: 0 0.5rem;
+									"
+									>FD_COPY 도입하기</span
+								>
+							</div>
+							<div style="padding: 1rem 0.5rem">
+								<span>
+									자기 소개 써주세요~ 어쩌다 개발하게 됐구,
+									어떤 분야에 관심있구, 개성 넘치게~~</span
+								>
+							</div>
+						</div>
+					</div>
+
+					<div style="margin: 2rem 1rem" class="d-flex flex-row">
+						<div style="padding: 1rem 5rem">
+							<div>
+								<span
+									style="
+										font-weight: 500;
+										font-size: 20px;
+										color: #999999;
+										border-right: 1px solid #cccccc;
+										padding: 0 0.5rem;
+									"
+									>Case 3</span
+								>
+								<span
+									style="
+										font-weight: bold;
+										font-size: 24px;
+										padding: 1rem;
+									"
+									>특정 조건에서만 동작하는 웹서브?!</span
+								>
+							</div>
+							<div>
+								<span
+									style="
+										font-weight: 500;
+										font-size: 13px;
+										color: #999999;
+										padding: 0 0.5rem;
+									"
+									>max_fd 수정하기</span
+								>
+							</div>
+							<div style="padding: 1rem 0.5rem">
+								<span>
+									자기 소개 써주세요~ 어쩌다 개발하게 됐구,
+									어떤 분야에 관심있구, 개성 넘치게~~</span
+								>
+							</div>
+						</div>
 					</div>
 				</div>
 			</section>
