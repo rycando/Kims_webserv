@@ -70,7 +70,7 @@ namespace ft
 	void				logger(std::string const &message, int param)
 	{
 		std::ofstream	writeFile;
-
+		std::string		tmp;
 		if (param > 0)
 		{
 			if (param == 1 && old_message != message)
@@ -90,8 +90,12 @@ namespace ft
 		}
 		else
 		{
-			writeFile.open("/client_status.log", std::ios::out | std::ios::app);
-			writeFile << "[" << return_current_time_and_date() << "] " << message << std::endl;
+			writeFile.open("./client_status.log", std::ios::out | std::ios::app);
+			if (writeFile.is_open())
+			{
+				tmp = "[" + return_current_time_and_date() + "] " + message + "\n";
+				writeFile.write(tmp.c_str(), tmp.size());
+			}
 			writeFile.close();
 		}
 	}
