@@ -52,19 +52,6 @@ int main(int argc, char** argv)
 
 		int ret;
 		ret = select(config.getMaxFd(g_servers) + 1, &readSet, &writeSet, NULL, &timeout);
-		// std::cout << "ret : " << ret << std::endl;
-
-		// int i = 3;
-		// while (i < 10)
-		// {
-		// 	if (FD_ISSET(i, &readSet))
-		// 	{
-		// 		std::cout << i << " ";
-		// 	}
-		// 	i++;
-		// }
-		// std::cout << std::endl;
-
 		for (std::vector<Server>::iterator server(g_servers.begin()); server != g_servers.end(); server++)
 		{
 			if (!g_state)

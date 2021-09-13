@@ -36,6 +36,16 @@ int		Server::getFd() const
 
 int		Server::getMaxFd()
 {
+	Client	*client;
+
+	for (std::vector<Client*>::iterator it(_clients.begin()); it != _clients.end(); ++it)
+	{
+		client = *it;
+		if (client->_read_fd > _maxFd)
+			_maxFd = client->_read_fd;
+		if (client->_write_fd > _maxFd)
+			_maxFd = client->_write_fd;
+	}
 	return (this->_maxFd);
 }
 
