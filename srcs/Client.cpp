@@ -150,7 +150,8 @@ void	Client::writeFile()
 
 void	Client::setToStandBy()
 {
-	ft::logger(_req.method + "from " + _ip + ":" + std::to_string(_port) + "answered", 1);
+
+	ft::logger(_req.method + " from " + _ip + ":" + std::to_string(_port) + " answered", _port);
 	_status = STANDBY;
 	setReadState(true);
 	if (_read_fd != -1)

@@ -213,30 +213,21 @@ int					Server::writeResponse(Client *client)
 	switch (client->_status)
 	{
 		case Client::RESPONSE:
-			// ft::logger(std::string("RESPONSE:\n") + std::string("-----------\n") + client->_response +std::string("------------\n"), 1);
 			length = write(client->_fd, client->_response.c_str(), client->_response.size());
 			if (length < client->_response.size())
-			{
-				std::cout << "Response : OK\n";
 				client->_response = client->_response.substr(length);
-			}
 			else
 			{
 				client->_response.clear();
 				client->setToStandBy();
-				std::cout << "Response : setToStandby()\n";
 			}
 			client->_last_date = ft::getDate();
 			break;
 		case Client::STANDBY:
 			if (getTimeDiff(client->_last_date) >= TIMEOUT) 
-			{
-				std::cout << "Not Timeout\n";
 				client->_status = Client::DONE;
-			}
 			break ;
 		case Client::DONE:
-			std::cout << "writeResponse : Done\n";
 			ft::logger("[" + std::to_string(_port) + "] " + "connected clients: " + std::to_string(_clients.size()), 1);
 			return (0);
 		default:

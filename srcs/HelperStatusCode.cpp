@@ -13,7 +13,6 @@ int			Helper::getStatusCode(Client &client)
 
 	client._res.version = "HTTP/1.1";
 	client._res.status_code = OK;
-    std::cout << "methods " << client._conf["methods"] << std::endl;
     if (client._conf["methods"].find(client._req.method) == std::string::npos)
         client._res.status_code = NOTALLOWED;
     else if (client._conf.find("auth") != client._conf.end())
@@ -30,9 +29,7 @@ int			Helper::getStatusCode(Client &client)
                 client._res.status_code = OK;
         }
 	}
-
 	ret = (this->*map[client._req.method])(client);
-
 	if (ret == 0)
 		getErrorPage(client);
 	return (ret);

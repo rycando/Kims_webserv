@@ -27,6 +27,14 @@ int main(int argc, char** argv)
 		config.parse(argv[1], g_servers);
 		initialize_fdsets(&rSet, &wSet, &readSet, &writeSet, &timeout);
 
+		// for (std::vector<Server>::iterator it = g_servers.begin(); it != g_servers.end(); it++)
+		// {
+		// 	for (unsigned long i = 0; i < it->_conf.size(); i++)
+		// 	{
+		// 		show_config(it->_conf.at(i));
+		// 	}
+		// }
+
 		for (std::vector<Server>::iterator it(g_servers.begin()); it != g_servers.end(); ++it)
 		{
 			it->init(&readSet, &writeSet, &rSet, &wSet);
@@ -43,15 +51,13 @@ int main(int argc, char** argv)
 	{
 		FD_COPY(&rSet, &readSet);
 		FD_COPY(&wSet, &writeSet);
-		
+
 		if (status == 1)
 		{
 			ft::logger("select() is waiting for Request :)\n", 1);
 			status = 0;
 		}
-
 		select(config.getMaxFd(g_servers) + 1, &readSet, &writeSet, NULL, &timeout);
-
 		for (std::vector<Server>::iterator server(g_servers.begin()); server != g_servers.end(); server++)
 		{
 			if (!g_state)

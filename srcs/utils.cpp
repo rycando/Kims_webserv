@@ -1,8 +1,12 @@
 #include "utils.hpp"
 #include <fstream>
 
+static std::string 		old_message = "";
+static std::vector<int>	p_list;
+
 namespace ft
 {
+
 	void	getline(std::string &buffer, std::string &line, char delim)
 	{
 		size_t					pos;
@@ -67,7 +71,22 @@ namespace ft
 		std::ofstream	writeFile;
 
 		if (param > 0)
-			std::cout << message << std::endl;
+		{
+			if (param == 1 && old_message != message)
+			{
+				std::cout << message << std::endl;
+				old_message = message;
+			}
+			else if (param > 1 && message.find("answered") != std::string::npos)
+			{
+				std::vector<int>::iterator it = find(p_list.begin(), p_list.end(), param);
+				if (it == p_list.end())
+				{
+					std::cout << message << std::endl;
+					p_list.push_back(param);
+				}
+			}
+		}
 		else
 		{
 			writeFile.open("./WebLog", std::ofstream::app);
