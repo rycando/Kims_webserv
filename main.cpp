@@ -26,15 +26,6 @@ int main(int argc, char** argv)
 	{
 		config.parse(argv[1], g_servers);
 		initialize_fdsets(&rSet, &wSet, &readSet, &writeSet, &timeout);
-
-		// for (std::vector<Server>::iterator it = g_servers.begin(); it != g_servers.end(); it++)
-		// {
-		// 	for (unsigned long i = 0; i < it->_conf.size(); i++)
-		// 	{
-		// 		show_config(it->_conf.at(i));
-		// 	}
-		// }
-
 		for (std::vector<Server>::iterator it(g_servers.begin()); it != g_servers.end(); ++it)
 		{
 			it->init(&readSet, &writeSet, &rSet, &wSet);

@@ -120,7 +120,7 @@ void	Client::readFile()
 		}
 	}
 	
-	try 
+	try
 	{
 		ret = read(_read_fd, buffer, BUFFER_SIZE);
 		buffer[ret] = '\0';

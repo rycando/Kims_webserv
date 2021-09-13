@@ -18,13 +18,9 @@ int			Helper::getStatusCode(Client &client)
     else if (client._conf.find("auth") != client._conf.end())
     {
         client._res.status_code = UNAUTHORIZED;
-        std::cout << "--------------------------------------" << std::endl;
         if (client._req.headers.find("Authorization") != client._req.headers.end())
         {
             credential = decode64(client._req.headers["Authorization"].c_str());
-            std::cout << "--------------------------------------" << std::endl;
-            std::cout << credential << std::endl;
-            std::cout << "--------------------------------------" << std::endl;
             if (credential == client._conf["auth"])
                 client._res.status_code = OK;
         }
