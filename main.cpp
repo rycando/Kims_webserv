@@ -44,7 +44,11 @@ int main(int argc, char** argv)
 		FD_COPY(&rSet, &readSet);
 		FD_COPY(&wSet, &writeSet);
 		
-		ft::logger("select() is waiting for Request :)\n", 1);
+		if (status == 1)
+		{
+			ft::logger("select() is waiting for Request :)\n", 1);
+			status = 0;
+		}
 
 		select(config.getMaxFd(g_servers) + 1, &readSet, &writeSet, NULL, &timeout);
 
