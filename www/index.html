@@ -185,10 +185,11 @@
 							</div>
 							<div style="padding: 1rem 0.5rem">
 								<span>
-									안녕하세요. Ekim입니다.
-									자기소개를 하라고 하는데 사실 뭘 써야할지 모르겠습니다.
-									사실 뭘 했다고 자기소개가 필요한지도 모르겠습니다.
-									음... 요새는 그냥 뒹굴거리고 건강에 관심많고 데이터 좋아합니다.
+									안녕하세요. Ekim입니다. 자기소개를 하라고
+									하는데 사실 뭘 써야할지 모르겠습니다. 사실
+									뭘 했다고 자기소개가 필요한지도
+									모르겠습니다. 음... 요새는 그냥 뒹굴거리고
+									건강에 관심많고 데이터 좋아합니다.
 								</span>
 							</div>
 							<div class="d-flex">
@@ -278,12 +279,12 @@
 							<div style="padding: 1rem 0.5rem">
 								<span>
 									안녕! 난 모두의 깜찍이~ 류낌이야! *__*
-									본명은 김륜영 발음하기도 힘들지!
-									날 ryu라고 불러주라구~우후후
-									난 귀여운거 좋아해 캐릭터도 좋고 스딸라도 좋아해!
-									javascript, React, node.js, nest.js, php를 좋아하는 백엔드 개발자야 ^_^
-									</span
-								>
+									본명은 김륜영 발음하기도 힘들지! 날 ryu라고
+									불러주라구~우후후 난 귀여운거 좋아해
+									캐릭터도 좋고 스딸라도 좋아해! javascript,
+									React, node.js, nest.js, php를 좋아하는
+									백엔드 개발자야 ^_^
+								</span>
 							</div>
 							<div class="d-flex">
 								<div
@@ -357,7 +358,7 @@
 				</div>
 			</section>
 			<section
-				style="border-bottom: 0.5px solid #eeeeee; height: 100vh"
+				style="border-bottom: 0.5px solid #eeeeee"
 				class="d-flex align-items-center"
 				id="sec_document"
 			>
@@ -373,6 +374,221 @@
 						>
 							웹 서브 기본 원리
 						</span>
+					</div>
+
+					<div>
+						<h1 id="tcp-ip-">TCP/IP 소켓 프로그래밍의 기본</h1>
+						<h2 id="1-">1. 소켓 생성</h2>
+						<pre><code class="lang-cpp">if ((<span class="hljs-name">_fd</span> = socket(<span class="hljs-name">PF_INET</span>, SOCK_STREAM, <span class="hljs-number">0</span>)) == <span class="hljs-number">-1</span>)
+    throw (<span class="hljs-name">ServerException</span>(<span class="hljs-string">"socket() error"</span>, std:<span class="hljs-symbol">:string</span>(<span class="hljs-name">strerror</span>(<span class="hljs-name">errno</span>))))<span class="hljs-comment">;</span>
+
+if (<span class="hljs-name">setsockopt</span>(<span class="hljs-name">_fd</span>, SOL_SOCKET, SO_REUSEADDR, <span class="hljs-symbol">&amp;option</span>, sizeof(<span class="hljs-name">option</span>)) == <span class="hljs-number">-1</span>)
+    throw (<span class="hljs-name">ServerException</span>(<span class="hljs-string">"setsockopt() error"</span>, std:<span class="hljs-symbol">:string</span>(<span class="hljs-name">strerror</span>(<span class="hljs-name">errno</span>))))<span class="hljs-comment">;</span>
+
+memset(<span class="hljs-name">&amp;_s_addr</span>, <span class="hljs-number">0</span>, sizeof(<span class="hljs-name">_s_addr</span>))<span class="hljs-comment">;</span>
+</code></pre>
+						<h3 id="setsockopt">setsockopt</h3>
+						<ul>
+							<li>
+								소켓이 wait 상태에서도 포트를 할당할 수 있게
+								SO_REUSEADDR로 socket을 set 해 준다.
+							</li>
+							<li>
+								SOL_SOCKET : 프로토콜의 level 설정. 일반적으로
+								이 옵션이 사용된다.
+							</li>
+							<li>
+								SO_REUSEADDR : 이미 사용중인 주소나 포트에
+								대해서도 바인드 허용
+							</li>
+						</ul>
+						<h2 id="2-">2. 연결 요청을 수신할 주소 설정</h2>
+						<ul>
+							<li>
+								webserv.conf 파일의 파싱 정보가 들어있는
+								_conf에서 host와 port를 가져오자.
+							</li>
+						</ul>
+						<pre><code class="lang-cpp">    <span class="hljs-keyword">if</span> ((<span class="hljs-keyword">const</span> <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span>)(c_idx = parse_address.find(<span class="hljs-string">":"</span>)) != <span class="hljs-built_in">std</span>::<span class="hljs-built_in">string</span>::npos)
+    {
+        host = parse_address.substr(<span class="hljs-number">0</span>, c_idx);
+        <span class="hljs-keyword">if</span> ((_port = atoi(parse_address.substr(c_idx + <span class="hljs-number">1</span>).c_str())) &lt; <span class="hljs-number">0</span>)   <span class="hljs-comment">// client port</span>
+            <span class="hljs-keyword">throw</span> (ServerException(<span class="hljs-string">"Wrong port"</span>, <span class="hljs-built_in">std</span>::to_string(_port)));
+        _s_addr.sin_addr.s_addr = inet_addr(host.c_str());
+    }
+    <span class="hljs-keyword">else</span>
+    {
+        _s_addr.sin_addr.s_addr = INADDR_ANY;
+        <span class="hljs-keyword">if</span> ((_port = atoi(parse_address.c_str())) &lt; <span class="hljs-number">0</span>)  <span class="hljs-comment">// client port</span>
+            <span class="hljs-keyword">throw</span> (ServerException(<span class="hljs-string">"Wrong port"</span>, <span class="hljs-built_in">std</span>::to_string(_port)));
+    }
+    _s_addr.sin_port = htons(_port);
+    _s_addr.sin_family = AF_INET;
+</code></pre>
+						<ul>
+							<li>
+								inet_addr : 문자열 주소를 32비트 정수로 변환
+							</li>
+							<li>
+								INADDR_ANY : 0으로 define된 값으로, 사용가능한
+								LAN 카드의 IP주소를 사용하라는 의미
+							</li>
+							<li>
+								htonl : long형 호스트 바이트 순서를 네트워크
+								바이트 순서로 변환
+							</li>
+							<li>
+								AF_INET : IPv4 인터넷 프로토콜에 적용하는
+								주소체계
+							</li>
+						</ul>
+						<h2 id="3-">3. 소켓을 포트에 연결</h2>
+						<pre><code class="lang-cpp"><span class="hljs-keyword">if</span> (bind(_fd, (<span class="hljs-keyword">struct</span> sockaddr *)&amp;_s_addr, <span class="hljs-keyword">sizeof</span>(_s_addr)) == <span class="hljs-number">-1</span>) 
+        <span class="hljs-keyword">throw</span> (ServerException(<span class="hljs-string">"bind()"</span>, <span class="hljs-built_in">std</span>::<span class="hljs-built_in">string</span>(strerror(errno))));
+</code></pre>
+						<ul>
+							<li>
+								파일디스크립터 _fd와 구조체 sockaddr_in을 bind,
+								즉 연결한다.
+							</li>
+						</ul>
+						<h2 id="4-">4. 커널에 개통 요청</h2>
+						<pre><code class="lang-cpp">if (<span class="hljs-name">listen</span>(<span class="hljs-name">_fd</span>, <span class="hljs-number">5</span>) == <span class="hljs-number">-1</span>)
+        throw (<span class="hljs-name">ServerException</span>(<span class="hljs-string">"listen()"</span>, std:<span class="hljs-symbol">:string</span>(<span class="hljs-name">strerror</span>(<span class="hljs-name">errno</span>))))<span class="hljs-comment">;</span>
+</code></pre>
+						<ul>
+							<li>
+								_fd : 클라이언트로부터 연결 요청을 받아들일
+								소켓의 파일 디스크립터
+							</li>
+							<li>
+								backlog(5) : 연결요청 대기 큐의 크기. 일반적으로
+								5로 설정한다.
+							</li>
+							<li>
+								listen() 함수를 호출하면 서버 소켓 상태는
+								close에서 listen 상태로 변경되고, 연결을 요청한
+								클라이언트 소켓은 SYN_RCVD 상태에서
+								3-way-handshaking을 완료하고 ESTABLISHED 상태가
+								된다.
+							</li>
+						</ul>
+						<h2 id="5-_fd-non-blocking-">
+							5. _fd를 non-blocking 모드로 바꿈
+						</h2>
+						<pre><code class="lang-cpp">if (<span class="hljs-name">fcntl</span>(<span class="hljs-name">_fd</span>, F_SETFL, O_NONBLOCK) == <span class="hljs-number">-1</span>)
+        throw (<span class="hljs-name">ServerException</span>(<span class="hljs-string">"fcntl()"</span>, std:<span class="hljs-symbol">:string</span>(<span class="hljs-name">strerror</span>(<span class="hljs-name">errno</span>))))<span class="hljs-comment">;</span>
+</code></pre>
+						<h3 id="blocking-mode">blocking mode</h3>
+						<ul>
+							<li>
+								블록 상태의 처리가 진행되기 전까지 다음 처리를
+								진행할 수 없다.
+							</li>
+						</ul>
+						<h3 id="non-blocking-mode">non-blocking mode</h3>
+						<ul>
+							<li>
+								소켓이 블록되지 않고 즉시 소켓의 상태를
+								반환한다.
+							</li>
+							<li>
+								소켓의 상태를 주기적으로 체크하고 다른 처리를
+								진행할 수 있게 된다.
+							</li>
+						</ul>
+						<h2 id="6-select-accept-">
+							6. select로 연결 대기, accept로 연결 수신
+						</h2>
+						<pre><code class="lang-cpp"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr</span></span> c_addr;
+
+<span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>)
+{
+        ...
+        <span class="hljs-keyword">if</span> (select(config.getMaxFd(g_servers) + <span class="hljs-number">1</span>, &amp;readSet, &amp;writeSet, NULL, &amp;timeout))
+                <span class="hljs-keyword">return</span> (<span class="hljs-number">0</span>);
+
+        len = <span class="hljs-keyword">sizeof</span>(<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr</span></span>);
+        memset(&amp;c_addr, <span class="hljs-number">0</span>, len);
+        <span class="hljs-keyword">if</span> ((fd = accept(_fd, (<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr</span></span> *)&amp;c_addr, &amp;len)) == -<span class="hljs-number">1</span>)
+                <span class="hljs-keyword">return</span> (<span class="hljs-number">0</span>);
+        ...
+}
+</code></pre>
+						<h3 id="select-">select - 다중 입출력</h3>
+						<pre><code class="lang-cpp"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;sys/select.h&gt;</span></span>
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">select</span><span class="hljs-params">(<span class="hljs-keyword">int</span> n, fd_set* read_fds, fd_sets* write_fds, fd_set* exceptfds, <span class="hljs-keyword">struct</span> timeval* timeout)</span></span>;
+</code></pre>
+						<ul>
+							<li>
+								파일 디스크립터가
+								<strong>입출력을 수행할 준비가 되거나</strong>
+								마지막 매개변수인
+								<strong
+									>timeout 변수에 정해진 시간이 경과할
+									때까지만</strong
+								>
+								&#39;블록&#39;된다.
+							</li>
+							<li>
+								파일에 대한 작업 중 &#39;블록&#39;이 발생하는
+								이유는 다양하지만 대표적 예로 read() 함수를
+								호출했는데 읽을 파일이 없어 읽을 내용이 생길
+								때까지 &#39;블록&#39;상태가 되는 것을 들 수
+								있다.
+							</li>
+							<li>
+								select() 시스템콜은 성공시 모든 fd_set<em
+									>에서 ready 된 <em>*fd의 갯수</em></em
+								>를 반환한다. 즉, 양수를 반환한다면 시스템은
+								read 또는 write를 할 준비가 된 것이다. 만약 0을
+								반환했다면 time limit이 된 것이다.
+							</li>
+							<li>
+								<strong
+									>감시대상 파일스크립터는 3가지 집합</strong
+								>으로 나뉘어 각각 다른 이벤트를 기다린다. 그게
+								바로
+								<strong
+									>read(GET), write(POST), event(기타)</strong
+								>이다. 만약 fd_set* 대신 NULL을 넘긴다면 해당
+								이벤트는 감시하지 않는다.
+							</li>
+							<li>
+								생성한 소켓에 데이터가 수신되었는지, 또는
+								연결해서 데이터를 주고받던 소켓이 종료되었는지를
+								체크하기 위해 select 함수를 사용한다. 하지만
+								select 함수는 정확히 어떤 fd가 사용가능한지
+								알려주지 않기 때문에 fd_set을 반복문으로
+								FD_ISSET을 통해서 일일이 확인해야 하므로
+								사용하기 복잡하다.
+							</li>
+						</ul>
+						<h3 id="accept-">
+							accept - 서버, 클라이언트 소켓 연결
+						</h3>
+						<pre><code class="lang-c"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;sys/socket.h&gt;</span></span>
+<span class="hljs-keyword">if</span> ((fd = accept(_fd, (<span class="hljs-keyword">struct</span> sockaddr *)&amp;c_addr, &amp;len)) == <span class="hljs-number">-1</span>)
+        <span class="hljs-keyword">throw</span> (ServerException(<span class="hljs-string">"accept() error in holdConnection(): "</span>, <span class="hljs-built_in">std</span>::<span class="hljs-built_in">string</span>(strerror(errno))));
+</code></pre>
+						<ul>
+							<li>
+								<strong>_fd</strong> : 서버 소켓 디스크립터.
+								연결 요청 대기 큐의 첫 번째 소켓의 fd 값
+							</li>
+							<li>
+								<strong>c_addr</strong> : client 주소 정보를
+								담고 있는 구조체
+							</li>
+							<li>
+								<strong>(socketlen_t *)len</strong> : c_addr의
+								크기
+							</li>
+							<li>
+								<strong>Return Value(fd)</strong> : 성공시
+								accepted socket의 descriptor, 실패시 -1
+							</li>
+						</ul>
 					</div>
 				</div>
 			</section>
