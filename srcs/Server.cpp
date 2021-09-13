@@ -193,7 +193,6 @@ int				Server::readRequest(Client *client)
 		{
 			log = "REQUEST:\n";
 			log += client->_buf;
-			// ft::logger(log, 1);
 			client->_last_date = ft::getDate();
 			_handler.parseRequest(*client, _conf);
 			client->setWriteState(true);
@@ -232,6 +231,7 @@ int					Server::writeResponse(Client *client)
 			return (0);
 		default:
 			_handler.dispatcher(*client);
+			ft::logger("Client : " + client->client_status[client->_status], 0);
 	}
 	return (1);
 }

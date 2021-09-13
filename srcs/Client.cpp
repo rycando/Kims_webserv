@@ -12,6 +12,15 @@ Client::Client(int fd, fd_set *r, fd_set *w, struct sockaddr_in c_addr)
 	FD_SET(_fd, _rSet);
 	FD_SET(_fd, _wSet);
 	_last_date = ft::getDate();
+	client_status[0] = "PARSING";
+	client_status[1] = "BODYPARSING";
+	client_status[2] = "CODE";
+	client_status[3] = "HEADERS";
+	client_status[4] = "CGI";
+	client_status[5] = "BODY";
+	client_status[6] = "RESPONSE";
+	client_status[7] = "STANDBY";
+	client_status[8] = "DONE";
 	ft::logger("new connection from " + _ip + ":" + std::to_string(_port), 1);
 }
 

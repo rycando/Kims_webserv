@@ -1,5 +1,6 @@
 #include "utils.hpp"
 #include <fstream>
+#include <time.h>
 
 static std::string 		old_message = "";
 static std::vector<int>	p_list;
@@ -7,7 +8,7 @@ static std::vector<int>	p_list;
 namespace ft
 {
 
-	void	getline(std::string &buffer, std::string &line, char delim)
+	void				getline(std::string &buffer, std::string &line, char delim)
 	{
 		size_t					pos;
 
@@ -29,7 +30,7 @@ namespace ft
 		}
 	}
 
-    int		getpower(int nb, int power)
+    int					getpower(int nb, int power)
 	{
 		if (power < 0)
 			return (0);
@@ -38,7 +39,7 @@ namespace ft
 		return (nb * getpower(nb, power - 1));
 	}
 
-	std::string		getDate()
+	std::string			getDate()
 	{
 		struct timeval	time;
 		struct tm		*tm;
@@ -52,7 +53,7 @@ namespace ft
 		return (buf);
 	}
 
-	void	freeAll(char **args, char **env)
+	void				freeAll(char **args, char **env)
 	{
 		free(args[0]);
 		free(args[1]);
@@ -74,24 +75,35 @@ namespace ft
 		{
 			if (param == 1 && old_message != message)
 			{
-				std::cout << message << std::endl;
+				std::cout << "[" << return_current_time_and_date() << "] " << message << std::endl;
 				old_message = message;
 			}
-			else if (param > 1 && message.find("answered") != std::string::npos)
+			else if (message.find("answered") != std::string::npos)
 			{
 				std::vector<int>::iterator it = find(p_list.begin(), p_list.end(), param);
 				if (it == p_list.end())
 				{
-					std::cout << message << std::endl;
+					std::cout << "[" << return_current_time_and_date() << "] " << message << std::endl;
 					p_list.push_back(param);
 				}
 			}
 		}
 		else
 		{
-			writeFile.open("./WebLog", std::ofstream::app);
-			writeFile << message << std::endl;
+			writeFile.open("/client_status.log", std::ios::out | std::ios::app);
+			writeFile << "[" << return_current_time_and_date() << "] " << message << std::endl;
 			writeFile.close();
 		}
+	}
+
+	std::string			return_current_time_and_date()
+	{
+	    time_t now = time(0);
+	    struct tm tstruct;
+	    char buf[80];
+
+	    tstruct = *localtime(&now);
+	    strftime(buf, sizeof(buf), "%X", &tstruct);
+	    return (buf);
 	}
 }

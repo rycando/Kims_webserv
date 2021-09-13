@@ -56,6 +56,8 @@ class Client
 			DONE
 		};
 
+		std::string client_status[9];
+
 		int		_fd;
 		int		_read_fd;
 		int		_write_fd;
