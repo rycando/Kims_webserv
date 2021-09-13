@@ -131,7 +131,7 @@ void Config::parse(char *file, std::vector<Server> &servers)
     {
         parse_conf(buf, line, context, config);
 
-        show_config(config);
+        // show_config(config);
         
         std::vector<Server>::iterator it(servers.begin());
         while (it != servers.end())
@@ -160,6 +160,7 @@ void Config::parse(char *file, std::vector<Server> &servers)
         server._conf.clear();
         config.clear();
     }
+    ft::logger("Parsing conf file completed\n", 1);
 }
 
 int  Config::getMaxFd(std::vector<Server> &servers)

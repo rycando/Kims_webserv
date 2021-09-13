@@ -38,6 +38,7 @@ int main(int argc, char** argv)
 		{
 			it->init(&readSet, &writeSet, &rSet, &wSet);
 		}
+		ft::logger("Initializing g_servers completed\n", 1);
 	}
 	catch (std::exception &e)
 	{
@@ -52,6 +53,19 @@ int main(int argc, char** argv)
 
 		int ret;
 		ret = select(config.getMaxFd(g_servers) + 1, &readSet, &writeSet, NULL, &timeout);
+
+		int i = 3;
+		std::string fds;
+		while (FD_ISSET(i, &readSet))
+		{
+			fds += i;
+			std::cout << i << " ";
+			i++;
+			if (!FD_ISSET(i, &readSet))
+			{
+				std::cout << std::endl;
+			}
+		}
 		for (std::vector<Server>::iterator server(g_servers.begin()); server != g_servers.end(); server++)
 		{
 			if (!g_state)
@@ -71,6 +85,7 @@ int main(int argc, char** argv)
 			{
 				if (!(communicate(&readSet, &writeSet, *server, *c)))
 				{
+					ft::logger(("communicate return 0 with client fd : " + std::to_string((*c)->_fd) + " read_fd : " + std::to_string((*c)->_read_fd)), 1);
 					if (*c)
 						delete *c;
 					server->_clients.erase(c);

@@ -185,9 +185,9 @@ void			Helper::fillBody(Client &client)
 	{
 		client._req.body += tmp.substr(0, client._chunk.len);
 
-		std::cout << "===================================\n";
-		std::cout << client._req.body << std::endl;
-		std::cout << "===================================\n";
+		// std::cout << "===================================\n";
+		// std::cout << client._req.body << std::endl;
+		// std::cout << "===================================\n";
 
 
 		tmp = tmp.substr(client._chunk.len + 1);
@@ -200,9 +200,9 @@ void			Helper::fillBody(Client &client)
 	{
 		client._req.body += tmp;
 
-		std::cout << "===================================\n";
-		std::cout << client._req.body << std::endl;
-		std::cout << "===================================\n";
+		// std::cout << "===================================\n";
+		// std::cout << client._req.body << std::endl;
+		// std::cout << "===================================\n";
 		
 		client._chunk.len -= tmp.size();
         client._chunk.done = true;
